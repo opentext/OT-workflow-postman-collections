@@ -1,2 +1,6 @@
 # OT-workflow-postman-collections
-Postman collection to support OT2 workflow
+Postman collection for OT2 workflow
+
+OpenText OT2 workflow postman collection
+
+Apache License 2.0
