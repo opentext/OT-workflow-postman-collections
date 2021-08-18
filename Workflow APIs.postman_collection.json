@@ -1,0 +1,808 @@
+{
+	"info": {
+		"_postman_id": "e8147390-17d9-4aac-b7fd-d996e79885a7",
+		"name": "Workflow APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "#0 Get authentication token",
+			"item": [
+				{
+					"name": "Get authentication token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"token\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"provide your password here\",\r\n    \"grant_type\": \"password\",\r\n    \"client_secret\": \"provide your client secret here\",\r\n    \"username\": \"provide your username here\",\r\n    \"client_id\": \"provide your client id here\"\r\n}"
+						},
+						"url": {
+							"raw": "https://{{host}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"oauth2",
+								"token"
+							]
+						},
+						"description": "Get auth token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "#1 Deploy a workflow",
+			"item": [
+				{
+					"name": "Create a new executable process model",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"modelType\": \"json\",\n\t\"modelContent\":{\n  \"bounds\": {\n    \"lowerRight\": {\n      \"x\": 1536,\n      \"y\": 1050\n    },\n    \"upperLeft\": {\n      \"x\": 0,\n      \"y\": 0\n    }\n  },\n  \"properties\": {\n    \"generalgroupheader\": \"\",\n    \"process_id\": \"OrderManagementProcess\",\n    \"name\": \"Order Management Process\",\n    \"detailsgroupheader\": \"\",\n    \"process_version\": \"\",\n    \"process_namespace\": \"tns\",\n    \"process_historylevel\": \"\",\n    \"dataproperties\": \"\",\n    \"process_potentialstarteruser\": \"\",\n    \"process_potentialstartergroup\": \"\",\n    \"signaldefinitions\": \"[]\",\n    \"messagedefinitions\": \"[]\",\n    \"escalationdefinitions\": \"[]\",\n    \"duedatedefinition\": \"\",\n    \"executiongroupheader\": \"\",\n    \"isasynchistoryenable\": true,\n    \"isexecutable\": true,\n    \"eventlisteners\": \"{\\\"eventListeners\\\":[]}\",\n    \"executionlisteners\": \"{\\\"executionListeners\\\":[]}\",\n    \"documentation\": \"My Process\",\n    \"iseagerexecutionfetch\": false,\n    \"messages\": []\n  },\n  \"childShapes\": [\n    {\n      \"resourceId\": \"startEvent1\",\n      \"properties\": {\n        \"generalgroupheader\": \"\",\n        \"overrideid\": \"startEvent1\",\n        \"name\": \"\",\n        \"detailsgroupheader\": \"\",\n        \"initiator\": \"\",\n        \"executiongroupheader\": \"\",\n        \"executionlisteners\": {\n          \"executionListeners\": []\n        },\n        \"formfieldvalidation\": \"true\",\n        \"interrupting\": true\n      },\n      \"stencil\": {\n        \"id\": \"StartNoneEvent\"\n      },\n      \"childShapes\": [],\n      \"outgoing\": [\n        {\n          \"resourceId\": \"sid-47863058-6533-48EB-BB3D-19B0B24DE4ED\"\n        }\n      ],\n      \"bounds\": {\n        \"lowerRight\": {\n          \"x\": 375,\n          \"y\": 220\n        },\n        \"upperLeft\": {\n          \"x\": 345,\n          \"y\": 190\n        }\n      },\n      \"dockers\": []\n    },\n    {\n      \"resourceId\": \"sid-1B8042B1-423F-483E-8D44-E2A850B299C7\",\n      \"properties\": {\n        \"generalgroupheader\": \"\",\n        \"overrideid\": \"sid-1B8042B1-423F-483E-8D44-E2A850B299C7\",\n        \"name\": \"Order Approval Task\",\n        \"detailsgroupheader\": \"\",\n        \"usertaskassignment\": {\n          \"assignment\": {\n            \"assignee\": \"adhulipa@opentext.com\",\n            \"candidateUsers\": [\n              {\n                \"value\": \"\"\n              }\n            ],\n            \"candidateGroups\": [\n              {\n                \"value\": \"\"\n              }\n            ],\n            \"type\": \"static\",\n            \"initiatorCanCompleteTask\": false\n          }\n        },\n        \"usertasknature\": \"\",\n        \"duedatedefinition\": \"\",\n        \"prioritydefinition\": \"\",\n        \"executiongroupheader\": \"\",\n        \"asynchronousdefinition\": false,\n        \"isforcompensation\": false,\n        \"exclusivedefinition\": true,\n        \"skipexpression\": \"\",\n        \"tasklisteners\": {\n          \"taskListeners\": []\n        },\n        \"executionlisteners\": {\n          \"executionListeners\": []\n        },\n        \"completioncondition\": \"\",\n        \"tasktype\": \"default\",\n        \"outcomevariable\": \"\",\n        \"possibleoutcomes\": \"\",\n        \"categorydefinition\": \"tns\",\n        \"multiinstance_type\": \"\",\n        \"multiinstance_cardinality\": \"\",\n        \"multiinstance_collection\": \"\",\n        \"multiinstance_variable\": \"\",\n        \"multiinstance_condition\": \"\",\n        \"multiinstance_collection_class\": \"\",\n        \"formfieldvalidation\": \"true\"\n      },\n      \"stencil\": {\n        \"id\": \"UserTask\"\n      },\n      \"childShapes\": [],\n      \"outgoing\": [\n        {\n          \"resourceId\": \"sid-56705A4D-12D2-4574-877B-439FBE8F0B39\"\n        }\n      ],\n      \"bounds\": {\n        \"lowerRight\": {\n          \"x\": 535,\n          \"y\": 245\n        },\n        \"upperLeft\": {\n          \"x\": 435,\n          \"y\": 165\n        }\n      },\n      \"dockers\": []\n    },\n    {\n      \"resourceId\": \"sid-47863058-6533-48EB-BB3D-19B0B24DE4ED\",\n      \"properties\": {\n        \"generalgroupheader\": \"\",\n        \"overrideid\": \"sid-47863058-6533-48EB-BB3D-19B0B24DE4ED\",\n        \"name\": \"\",\n        \"detailsgroupheader\": \"\",\n        \"conditionsequenceflow\": \"\",\n        \"defaultflow\": \"false\",\n        \"skipexpression\": \"\",\n        \"executiongroupheader\": \"\",\n        \"executionlisteners\": \"\"\n      },\n      \"stencil\": {\n        \"id\": \"SequenceFlow\"\n      },\n      \"childShapes\": [],\n      \"outgoing\": [\n        {\n          \"resourceId\": \"sid-1B8042B1-423F-483E-8D44-E2A850B299C7\"\n        }\n      ],\n      \"bounds\": {\n        \"lowerRight\": {\n          \"x\": 434.1953125,\n          \"y\": 205\n        },\n        \"upperLeft\": {\n          \"x\": 375.6484375,\n          \"y\": 205\n        }\n      },\n      \"dockers\": [\n        {\n          \"x\": 15,\n          \"y\": 15\n        },\n        {\n          \"x\": 50,\n          \"y\": 40\n        }\n      ],\n      \"target\": {\n        \"resourceId\": \"sid-1B8042B1-423F-483E-8D44-E2A850B299C7\"\n      }\n    },\n    {\n      \"resourceId\": \"sid-FD1B4E09-5DA8-4EBD-B103-07362CB2FC63\",\n      \"properties\": {\n        \"generalgroupheader\": \"\",\n        \"overrideid\": \"sid-FD1B4E09-5DA8-4EBD-B103-07362CB2FC63\",\n        \"name\": \"\",\n        \"executiongroupheader\": \"\",\n        \"executionlisteners\": {\n          \"executionListeners\": []\n        }\n      },\n      \"stencil\": {\n        \"id\": \"EndNoneEvent\"\n      },\n      \"childShapes\": [],\n      \"outgoing\": [],\n      \"bounds\": {\n        \"lowerRight\": {\n          \"x\": 613,\n          \"y\": 219\n        },\n        \"upperLeft\": {\n          \"x\": 585,\n          \"y\": 191\n        }\n      },\n      \"dockers\": []\n    },\n    {\n      \"resourceId\": \"sid-56705A4D-12D2-4574-877B-439FBE8F0B39\",\n      \"properties\": {\n        \"generalgroupheader\": \"\",\n        \"overrideid\": \"sid-56705A4D-12D2-4574-877B-439FBE8F0B39\",\n        \"name\": \"\",\n        \"detailsgroupheader\": \"\",\n        \"conditionsequenceflow\": \"\",\n        \"defaultflow\": \"false\",\n        \"skipexpression\": \"\",\n        \"executiongroupheader\": \"\",\n        \"executionlisteners\": \"\"\n      },\n      \"stencil\": {\n        \"id\": \"SequenceFlow\"\n      },\n      \"childShapes\": [],\n      \"outgoing\": [\n        {\n          \"resourceId\": \"sid-FD1B4E09-5DA8-4EBD-B103-07362CB2FC63\"\n        }\n      ],\n      \"bounds\": {\n        \"lowerRight\": {\n          \"x\": 584.640625,\n          \"y\": 205\n        },\n        \"upperLeft\": {\n          \"x\": 535.875,\n          \"y\": 205\n        }\n      },\n      \"dockers\": [\n        {\n          \"x\": 50,\n          \"y\": 40\n        },\n        {\n          \"x\": 14,\n          \"y\": 14\n        }\n      ],\n      \"target\": {\n        \"resourceId\": \"sid-FD1B4E09-5DA8-4EBD-B103-07362CB2FC63\"\n      }\n    }\n  ],\n  \"stencil\": {\n    \"id\": \"BPMNDiagram\"\n  },\n  \"stencilset\": {\n    \"namespace\": \"http://b3mn.org/stencilset/bpmn2.0#\",\n    \"url\": \"../editor/stencilsets/bpmn2.0/bpmn2.0.json\"\n  }\n}\n}"
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/runtime/models",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"runtime",
+								"models"
+							]
+						},
+						"description": "Deploy model"
+					},
+					"response": []
+				},
+				{
+					"name": "Get executable process models",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/runtime/models?name=Order Management Process",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"runtime",
+								"models"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Order Management Process"
+								}
+							]
+						},
+						"description": "Deploy model"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an executable process model",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/runtime/models/75438705-ff48-11eb-af80-eeee0affb6fd?cascade=true",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"runtime",
+								"models",
+								"75438705-ff48-11eb-af80-eeee0affb6fd"
+							],
+							"query": [
+								{
+									"key": "cascade",
+									"value": "true"
+								}
+							]
+						},
+						"description": "Deploy model"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "#2 Start a workflow",
+			"item": [
+				{
+					"name": "Create a process instance using key",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"processDefinitionKey\": \"OrderManagementProcess\"\n}"
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/process-instances",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"process-instances"
+							]
+						},
+						"description": "Trigger process instance"
+					},
+					"response": []
+				},
+				{
+					"name": "Create a process instance with process variables",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"processDefinitionKey\": \"OrderManagementProcess\",\n    \"variables\": [\n        {\n            \"name\": \"OrderNumber\",\n            \"value\": 1\n        },\n        {\n            \"name\": \"ProductName\",\n            \"value\": \"Phone\",\n            \"type\": \"string\",\n            \"scope\": \"local\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/process-instances",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"process-instances"
+							]
+						},
+						"description": "Trigger process instance"
+					},
+					"response": []
+				},
+				{
+					"name": "Create a process instance using definition id",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"processDefinitionId\": \"OrderManagementProcess:3:872f9bf8-ff51-11eb-af80-eeee0affb6fd\"\n}"
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/process-instances",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"process-instances"
+							]
+						},
+						"description": "Trigger process instance"
+					},
+					"response": []
+				},
+				{
+					"name": "List process instances",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/process-instances?processDefinitionKey=OrderManagementProcess",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"process-instances"
+							],
+							"query": [
+								{
+									"key": "processDefinitionKey",
+									"value": "OrderManagementProcess"
+								}
+							]
+						},
+						"description": "Trigger process instance"
+					},
+					"response": []
+				},
+				{
+					"name": "Get a process instance",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/process-instances/3de3722b-ff4e-11eb-af80-eeee0affb6fd",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"process-instances",
+								"3de3722b-ff4e-11eb-af80-eeee0affb6fd"
+							]
+						},
+						"description": "Trigger process instance"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "#3 Working with tasks",
+			"item": [
+				{
+					"name": "Get tasks",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/tasks?processInstanceId=09e229c6-ff52-11eb-af80-eeee0affb6fd&includeProcessVariables=true",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "processInstanceId",
+									"value": "09e229c6-ff52-11eb-af80-eeee0affb6fd"
+								},
+								{
+									"key": "includeProcessVariables",
+									"value": "true"
+								},
+								{
+									"key": "includeTaskLocalVariables",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get Tasks for process instance"
+					},
+					"response": []
+				},
+				{
+					"name": "Get a single task",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/tasks/09eeacec-ff52-11eb-af80-eeee0affb6fd",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"tasks",
+								"09eeacec-ff52-11eb-af80-eeee0affb6fd"
+							],
+							"query": [
+								{
+									"key": "includeProcessVariables",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get Tasks for process instance"
+					},
+					"response": []
+				},
+				{
+					"name": "Claim task",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"action\": \"claim\",\n    \"assignee\": \"dmallela@opentext.com\"\n}"
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/tasks/30dd1c60-b44d-11ea-b96e-eeee0aff831e",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"tasks",
+								"30dd1c60-b44d-11ea-b96e-eeee0aff831e"
+							]
+						},
+						"description": "Complete task"
+					},
+					"response": []
+				},
+				{
+					"name": "Complete task",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"action\": \"complete\"\n}"
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/tasks/09eeacec-ff52-11eb-af80-eeee0affb6fd",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"tasks",
+								"09eeacec-ff52-11eb-af80-eeee0affb6fd"
+							]
+						},
+						"description": "Complete task"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "#4 Using process variables",
+			"item": [
+				{
+					"name": "Get process variables",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/process-instances/481997ab-ff52-11eb-a8ea-eeee0affe0f7/variables",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"process-instances",
+								"481997ab-ff52-11eb-a8ea-eeee0affe0f7",
+								"variables"
+							]
+						},
+						"description": "Get process variables"
+					},
+					"response": []
+				},
+				{
+					"name": "Create process variables",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"name\": \"OrderValue\",\r\n        \"value\": 100\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/process-instances/481997ab-ff52-11eb-a8ea-eeee0affe0f7/variables",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"process-instances",
+								"481997ab-ff52-11eb-a8ea-eeee0affe0f7",
+								"variables"
+							]
+						},
+						"description": "Get process variables"
+					},
+					"response": []
+				},
+				{
+					"name": "Update process variables",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"OrderValue\",\n    \"value\": 200\n}"
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/process-instances/481997ab-ff52-11eb-a8ea-eeee0affe0f7/variables/OrderValue",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"process-instances",
+								"481997ab-ff52-11eb-a8ea-eeee0affe0f7",
+								"variables",
+								"OrderValue"
+							]
+						},
+						"description": "Get process variables"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
