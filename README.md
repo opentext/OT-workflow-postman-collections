@@ -1,4 +1,4 @@
-# OT-workflow-postman-collections
+Workflow postman collections
 Postman collection for OCP workflow
 
 OpenText OCP workflow postman collection. This collection is to support the workflow API usage documented [here](https://developer.opentext.com/apis/11b39c7b-a021-4274-a195-e893fdc70de1/Workflow%20Service).
