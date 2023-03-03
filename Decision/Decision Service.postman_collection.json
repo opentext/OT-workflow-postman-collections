@@ -1,0 +1,1013 @@
+{
+	"info": {
+		"_postman_id": "76794652-debd-4268-9967-846d5bca31db",
+		"name": "Decision Service Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19084338"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "get tenant access token with client credentials grant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (responseBody.has(\"access_token\")) {",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    postman.setEnvironmentVariable(\"tenant_access_token\", jsonData.access_token);",
+									"    console.log(postman.getEnvironmentVariable(\"tenant_access_token\"));",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableCookies": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{app_client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{app_client_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_host}}/tenants/{{tenant_id}}/oauth2/token",
+							"host": [
+								"{{api_host}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenant_id}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Decision Models",
+			"item": [
+				{
+					"name": "deploy a first hit policy decision model",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData=JSON.parse(responseBody);\r",
+									"pm.environment.set(\"firstHit_modelKey\", jsonData.key);\r",
+									"pm.environment.set(\"modelId\",jsonData.id);\r",
+									"\r",
+									"pm.globals.set(\"id\", \"{{subscription-id}}\");\r",
+									"\r",
+									"pm.test(\"Status code is \" + pm.response.code +\" and decisionKey is \"+ jsonData.key, function () {\r",
+									"\r",
+									"  pm.response.to.have.status(201);\r",
+									"\r",
+									"  pm.expect(jsonData.key).to.eql(pm.variables.get(\"model-key\"));\r",
+									"  });\r",
+									"\r",
+									" pm.test(\"Status code is \" + pm.response.status,function(){\r",
+									"  pm.response.to.have.status(\"Created\")\r",
+									"  });\r",
+									"\r",
+									"  pm.test(\"TenantId is \"+ jsonData.tenantId,function(){\r",
+									"      pm.expect(jsonData.tenantId).to.eql(pm.variables.get(\"tenant_id\"));\r",
+									"  });\r",
+									"  \r",
+									"pm.test(\"SubscriptionId is \"+ jsonData.subscriptionId,function(){\r",
+									"      pm.expect(jsonData.subscriptionId).to.eql(pm.variables.get(\"subscription-id\"));\r",
+									"  });\r",
+									"\r",
+									"  pm.test(\"Model name is \"+ jsonData.name,function(){\r",
+									"      pm.expect(jsonData.name).to.eql(pm.variables.get(\"model-name\"));\r",
+									"  });\r",
+									"\r",
+									"  pm.test(\"DeploymentSpace is \"+ jsonData.deploymentSpace,function(){\r",
+									"      pm.expect(jsonData.deploymentSpace).to.eql(pm.variables.get(\"deploymentSpace\"));\r",
+									"  });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"modelType\": \"xml\",\n    \"modelContent\":\"PGRlZmluaXRpb25zIHhtbG5zPSJodHRwczovL3d3dy5vbWcub3JnL3NwZWMvRE1OLzIwMTkxMTExL01PREVMLyIgeG1sbnM6ZG1uZGk9Imh0dHBzOi8vd3d3Lm9tZy5vcmcvc3BlYy9ETU4vMjAxOTExMTEvRE1OREkvIiB4bWxuczpkYz0iaHR0cDovL3d3dy5vbWcub3JnL3NwZWMvRE1OLzIwMTgwNTIxL0RDLyIgeG1sbnM6ZGk9Imh0dHA6Ly93d3cub21nLm9yZy9zcGVjL0RNTi8yMDE4MDUyMS9ESS8iIGlkPSJkZWZpbml0aW9uXyIgbmFtZT0iRHluYW1pY2NvbnRyYWN0YXBwcm92YWwtZmlyc3RoaXQiIG5hbWVzcGFjZT0iaHR0cHM6Ly9kZWNpc2lvbm1vZGVsLm9wZW50ZXh0LmNvbSIgZXhwb3J0ZXI9IkZsb3dhYmxlIE9wZW4gU291cmNlIE1vZGVsZXIiIGV4cG9ydGVyVmVyc2lvbj0iNi43LjIiPgogIDxkZWNpc2lvbiBpZD0iQ29udHJhY3RfYXBwcm92YWwiIG5hbWU9IkR5bmFtaWNjb250cmFjdGFwcHJvdmFsLWZpcnN0aGl0IiB4bWxuczpkbT0iaHR0cHM6Ly9kZWNpc2lvbm1vZGVsLm9wZW50ZXh0LmNvbSIgZG06Y2F0ZWdvcnk9IkNhdGVnb3J5MSI+CiAgICA8ZGVjaXNpb25UYWJsZSBpZD0iZGVjaXNpb25UYWJsZV85MmFlZTI5OS1kMmZmLTRhYTctYWM3NS1mODRiNDdmYTQ2YzYiIGhpdFBvbGljeT0iRklSU1QiPgogICAgICA8aW5wdXQgbGFiZWw9IkNvbnRyYWN0IENhdGVnb3J5Ij4KICAgICAgICA8aW5wdXRFeHByZXNzaW9uIGlkPSJpbnB1dEV4cHJlc3Npb25fZmFjYzkyZDUtNjRhYS00YTVjLWIzZWMtYjUxOTg2OGZjYzAzIiB0eXBlUmVmPSJzdHJpbmciPgogICAgICAgICAgPHRleHQ+Q29udHJhY3RfQ2F0ZWdvcnk8L3RleHQ+CiAgICAgICAgPC9pbnB1dEV4cHJlc3Npb24+CiAgICAgIDwvaW5wdXQ+CiAgICAgIDxpbnB1dCBsYWJlbD0iQ29udHJhY3QgVmFsdWUiPgogICAgICAgIDxpbnB1dEV4cHJlc3Npb24gaWQ9ImlucHV0RXhwcmVzc2lvbl9hM2NmMDVjMS0xN2UwLTRjMWMtYTMwZC1jNTc2NzUzY2E1YWYiIHR5cGVSZWY9Im51bWJlciI+CiAgICAgICAgICA8dGV4dD5Db250cmFjdF9WYWx1ZTwvdGV4dD4KICAgICAgICA8L2lucHV0RXhwcmVzc2lvbj4KICAgICAgPC9pbnB1dD4KICAgICAgPG91dHB1dCBpZD0ib3V0cHV0RXhwcmVzc2lvbl9jMWUyNTJkNC1jYzk0LTQ2ZDgtYmI4Ny01MWY3NmNmNTk5MWMiIGxhYmVsPSJDb250cmFjdCBBcHByb3ZlciIgbmFtZT0iQ29udHJhY3RfQXBwcm92ZXIiIHR5cGVSZWY9InN0cmluZyI+PC9vdXRwdXQ+CiAgICAgIDxydWxlPgogICAgICAgIDxpbnB1dEVudHJ5IGlkPSJpbnB1dEVudHJ5X2ZhY2M5MmQ1LTY0YWEtNGE1Yy1iM2VjLWI1MTk4NjhmY2MwM18xIj4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWz09ICJBY2FkZW15Il1dPjwvdGV4dD4KICAgICAgICA8L2lucHV0RW50cnk+CiAgICAgICAgPGlucHV0RW50cnkgaWQ9ImlucHV0RW50cnlfYTNjZjA1YzEtMTdlMC00YzFjLWEzMGQtYzU3Njc1M2NhNWFmXzEiPgogICAgICAgICAgPHRleHQ+PCFbQ0RBVEFbPj0gMjUwMDBdXT48L3RleHQ+CiAgICAgICAgPC9pbnB1dEVudHJ5PgogICAgICAgIDxvdXRwdXRFbnRyeSBpZD0ib3V0cHV0RW50cnlfYzFlMjUyZDQtY2M5NC00NmQ4LWJiODctNTFmNzZjZjU5OTFjXzEiPgogICAgICAgICAgPHRleHQ+PCFbQ0RBVEFbIkpvaG4gRG9lIl1dPjwvdGV4dD4KICAgICAgICA8L291dHB1dEVudHJ5PgogICAgICA8L3J1bGU+CiAgICAgIDxydWxlPgogICAgICAgIDxpbnB1dEVudHJ5IGlkPSJpbnB1dEVudHJ5X2ZhY2M5MmQ1LTY0YWEtNGE1Yy1iM2VjLWI1MTk4NjhmY2MwM18yIj4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWz09ICJBY2FkZW15Il1dPjwvdGV4dD4KICAgICAgICA8L2lucHV0RW50cnk+CiAgICAgICAgPGlucHV0RW50cnkgaWQ9ImlucHV0RW50cnlfYTNjZjA1YzEtMTdlMC00YzFjLWEzMGQtYzU3Njc1M2NhNWFmXzIiPgogICAgICAgICAgPHRleHQ+PCFbQ0RBVEFbPT0gMTAwMDBdXT48L3RleHQ+CiAgICAgICAgPC9pbnB1dEVudHJ5PgogICAgICAgIDxvdXRwdXRFbnRyeSBpZD0ib3V0cHV0RW50cnlfYzFlMjUyZDQtY2M5NC00NmQ4LWJiODctNTFmNzZjZjU5OTFjXzIiPgogICAgICAgICAgPHRleHQ+PCFbQ0RBVEFbIktyaXN0ZW4gRmlzaGVyIl1dPjwvdGV4dD4KICAgICAgICA8L291dHB1dEVudHJ5PgogICAgICA8L3J1bGU+CiAgICAgIDxydWxlPgogICAgICAgIDxpbnB1dEVudHJ5IGlkPSJpbnB1dEVudHJ5X2ZhY2M5MmQ1LTY0YWEtNGE1Yy1iM2VjLWI1MTk4NjhmY2MwM18zIj4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWz09ICJIZWFsdGgiXV0+PC90ZXh0PgogICAgICAgIDwvaW5wdXRFbnRyeT4KICAgICAgICA8aW5wdXRFbnRyeSBpZD0iaW5wdXRFbnRyeV9hM2NmMDVjMS0xN2UwLTRjMWMtYTMwZC1jNTc2NzUzY2E1YWZfMyI+CiAgICAgICAgICA8dGV4dD48IVtDREFUQVs8IDEwMDAwXV0+PC90ZXh0PgogICAgICAgIDwvaW5wdXRFbnRyeT4KICAgICAgICA8b3V0cHV0RW50cnkgaWQ9Im91dHB1dEVudHJ5X2MxZTI1MmQ0LWNjOTQtNDZkOC1iYjg3LTUxZjc2Y2Y1OTkxY18zIj4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWyJLYXRlIE1pbGxlciJdXT48L3RleHQ+CiAgICAgICAgPC9vdXRwdXRFbnRyeT4KICAgICAgPC9ydWxlPgogICAgICA8cnVsZT4KICAgICAgICA8aW5wdXRFbnRyeSBpZD0iaW5wdXRFbnRyeV9mYWNjOTJkNS02NGFhLTRhNWMtYjNlYy1iNTE5ODY4ZmNjMDNfNCI+CiAgICAgICAgICA8dGV4dD48IVtDREFUQVs9PSAiSGVhbHRoIl1dPjwvdGV4dD4KICAgICAgICA8L2lucHV0RW50cnk+CiAgICAgICAgPGlucHV0RW50cnkgaWQ9ImlucHV0RW50cnlfYTNjZjA1YzEtMTdlMC00YzFjLWEzMGQtYzU3Njc1M2NhNWFmXzQiPgogICAgICAgICAgPHRleHQ+PCFbQ0RBVEFbPD0gMTUwMDBdXT48L3RleHQ+CiAgICAgICAgPC9pbnB1dEVudHJ5PgogICAgICAgIDxvdXRwdXRFbnRyeSBpZD0ib3V0cHV0RW50cnlfYzFlMjUyZDQtY2M5NC00NmQ4LWJiODctNTFmNzZjZjU5OTFjXzQiPgogICAgICAgICAgPHRleHQ+PCFbQ0RBVEFbIlRvbSBQZXJleiwgS3Jpc3RlbiBGaXNoZXIiXV0+PC90ZXh0PgogICAgICAgIDwvb3V0cHV0RW50cnk+CiAgICAgIDwvcnVsZT4KICAgICAgPHJ1bGU+CiAgICAgICAgPGlucHV0RW50cnkgaWQ9ImlucHV0RW50cnlfZmFjYzkyZDUtNjRhYS00YTVjLWIzZWMtYjUxOTg2OGZjYzAzXzUiPgogICAgICAgICAgPHRleHQ+PCFbQ0RBVEFbPT0gIkhlYWx0aCJdXT48L3RleHQ+CiAgICAgICAgPC9pbnB1dEVudHJ5PgogICAgICAgIDxpbnB1dEVudHJ5IGlkPSJpbnB1dEVudHJ5X2EzY2YwNWMxLTE3ZTAtNGMxYy1hMzBkLWM1NzY3NTNjYTVhZl81Ij4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWz49IDI1MDAwXV0+PC90ZXh0PgogICAgICAgIDwvaW5wdXRFbnRyeT4KICAgICAgICA8b3V0cHV0RW50cnkgaWQ9Im91dHB1dEVudHJ5X2MxZTI1MmQ0LWNjOTQtNDZkOC1iYjg3LTUxZjc2Y2Y1OTkxY181Ij4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWyJGaW5hbmNlIFRlYW0iXV0+PC90ZXh0PgogICAgICAgIDwvb3V0cHV0RW50cnk+CiAgICAgIDwvcnVsZT4KICAgICAgPHJ1bGU+CiAgICAgICAgPGlucHV0RW50cnkgaWQ9ImlucHV0RW50cnlfZmFjYzkyZDUtNjRhYS00YTVjLWIzZWMtYjUxOTg2OGZjYzAzXzYiPgogICAgICAgICAgPHRleHQ+PCFbQ0RBVEFbPT0gIkluc3VyYW5jZSJdXT48L3RleHQ+CiAgICAgICAgPC9pbnB1dEVudHJ5PgogICAgICAgIDxpbnB1dEVudHJ5IGlkPSJpbnB1dEVudHJ5X2EzY2YwNWMxLTE3ZTAtNGMxYy1hMzBkLWM1NzY3NTNjYTVhZl82Ij4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWz4gMTAwMDBdXT48L3RleHQ+CiAgICAgICAgPC9pbnB1dEVudHJ5PgogICAgICAgIDxvdXRwdXRFbnRyeSBpZD0ib3V0cHV0RW50cnlfYzFlMjUyZDQtY2M5NC00NmQ4LWJiODctNTFmNzZjZjU5OTFjXzYiPgogICAgICAgICAgPHRleHQ+PCFbQ0RBVEFbIkthdGUgTWlsbGVyIl1dPjwvdGV4dD4KICAgICAgICA8L291dHB1dEVudHJ5PgogICAgICA8L3J1bGU+CiAgICAgIDxydWxlPgogICAgICAgIDxpbnB1dEVudHJ5IGlkPSJpbnB1dEVudHJ5X2ZhY2M5MmQ1LTY0YWEtNGE1Yy1iM2VjLWI1MTk4NjhmY2MwM183Ij4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWz09ICJJbnN1cmFuY2UiXV0+PC90ZXh0PgogICAgICAgIDwvaW5wdXRFbnRyeT4KICAgICAgICA8aW5wdXRFbnRyeSBpZD0iaW5wdXRFbnRyeV9hM2NmMDVjMS0xN2UwLTRjMWMtYTMwZC1jNTc2NzUzY2E1YWZfNyI+CiAgICAgICAgICA8dGV4dD48IVtDREFUQVs+IDI1MDAwXV0+PC90ZXh0PgogICAgICAgIDwvaW5wdXRFbnRyeT4KICAgICAgICA8b3V0cHV0RW50cnkgaWQ9Im91dHB1dEVudHJ5X2MxZTI1MmQ0LWNjOTQtNDZkOC1iYjg3LTUxZjc2Y2Y1OTkxY183Ij4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWyJKb2huIERvZSJdXT48L3RleHQ+CiAgICAgICAgPC9vdXRwdXRFbnRyeT4KICAgICAgPC9ydWxlPgogICAgPC9kZWNpc2lvblRhYmxlPgogIDwvZGVjaXNpb24+CiAgPGRtbmRpOkRNTkRJPjwvZG1uZGk6RE1OREk+CjwvZGVmaW5pdGlvbnM+\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{decision_url}}/v1/runtime/decision-models",
+							"host": [
+								"{{decision_url}}"
+							],
+							"path": [
+								"v1",
+								"runtime",
+								"decision-models"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deploy a rule order policy decision model",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData=JSON.parse(responseBody);\r",
+									"pm.environment.set(\"ruleOrder_modelKey\", jsonData.key);\r",
+									"pm.environment.set(\"modelId\",jsonData.id);\r",
+									"\r",
+									"pm.test(\"Status code is \" + pm.response.code +\" and decisionKey is \"+ jsonData.key, function () {\r",
+									"\r",
+									"  pm.response.to.have.status(201);\r",
+									"\r",
+									"  pm.expect(jsonData.key).to.eql(pm.variables.get(\"model-key\"));\r",
+									"  });\r",
+									"\r",
+									" pm.test(\"Status code is \" + pm.response.status,function(){\r",
+									"  pm.response.to.have.status(\"Created\")\r",
+									"  });\r",
+									"\r",
+									"  pm.test(\"TenantId is \"+ jsonData.tenantId,function(){\r",
+									"      pm.expect(jsonData.tenantId).to.eql(pm.variables.get(\"tenant_id\"));\r",
+									"  });\r",
+									"  \r",
+									"pm.test(\"SubscriptionId is \"+ jsonData.subscriptionId,function(){\r",
+									"      pm.expect(jsonData.subscriptionId).to.eql(pm.variables.get(\"subscription-id\"));\r",
+									"  });\r",
+									"\r",
+									"  pm.test(\"Model name is \"+ jsonData.name,function(){\r",
+									"      pm.expect(jsonData.name).to.eql(pm.variables.get(\"ruleorder-model-name\"));\r",
+									"  });\r",
+									"\r",
+									"  pm.test(\"deploymentSpace is \"+ jsonData.deploymentSpace,function(){\r",
+									"      pm.expect(jsonData.deploymentSpace).to.eql(pm.variables.get(\"deploymentSpace\"));\r",
+									"  });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"modelType\": \"xml\",\n    \"modelContent\":\"PGRlZmluaXRpb25zIHhtbG5zPSJodHRwczovL3d3dy5vbWcub3JnL3NwZWMvRE1OLzIwMTkxMTExL01PREVMLyIgeG1sbnM6ZG1uZGk9Imh0dHBzOi8vd3d3Lm9tZy5vcmcvc3BlYy9ETU4vMjAxOTExMTEvRE1OREkvIiB4bWxuczpkYz0iaHR0cDovL3d3dy5vbWcub3JnL3NwZWMvRE1OLzIwMTgwNTIxL0RDLyIgeG1sbnM6ZGk9Imh0dHA6Ly93d3cub21nLm9yZy9zcGVjL0RNTi8yMDE4MDUyMS9ESS8iIGlkPSJkZWZpbml0aW9uXyIgbmFtZT0iRHluYW1pY2NvbnRyYWN0YXBwcm92YWwtcnVsZW9yZGVyIiBuYW1lc3BhY2U9Imh0dHBzOi8vZGVjaXNpb25tb2RlbC5vcGVudGV4dC5jb20iIGV4cG9ydGVyPSJGbG93YWJsZSBPcGVuIFNvdXJjZSBNb2RlbGVyIiBleHBvcnRlclZlcnNpb249IjYuNy4yIj4KICA8ZGVjaXNpb24gaWQ9IkNvbnRyYWN0X2FwcHJvdmFsIiBuYW1lPSJEeW5hbWljY29udHJhY3RhcHByb3ZhbC1ydWxlb3JkZXIiIHhtbG5zOmRtPSJodHRwczovL2RlY2lzaW9ubW9kZWwub3BlbnRleHQuY29tIiBkbTpjYXRlZ29yeT0iQ2F0ZWdvcnkxIj4KICAgIDxkZWNpc2lvblRhYmxlIGlkPSJkZWNpc2lvblRhYmxlXzI4MWU5MzgwLTgwYjMtNGZiZC04MDk3LTFlYjM4NjJlOTQwZCIgaGl0UG9saWN5PSJSVUxFIE9SREVSIj4KICAgICAgPGlucHV0IGxhYmVsPSJDb250cmFjdCBDYXRlZ29yeSI+CiAgICAgICAgPGlucHV0RXhwcmVzc2lvbiBpZD0iaW5wdXRFeHByZXNzaW9uX2IwNGNhOTI4LWFmYTYtNDNmNi1iMzQzLTA5Y2IzMWQ3MWM3MCIgdHlwZVJlZj0ic3RyaW5nIj4KICAgICAgICAgIDx0ZXh0PkNvbnRyYWN0X0NhdGVnb3J5PC90ZXh0PgogICAgICAgIDwvaW5wdXRFeHByZXNzaW9uPgogICAgICA8L2lucHV0PgogICAgICA8aW5wdXQgbGFiZWw9IkNvbnRyYWN0IFZhbHVlIj4KICAgICAgICA8aW5wdXRFeHByZXNzaW9uIGlkPSJpbnB1dEV4cHJlc3Npb25fZDE4YThlMTktYzQ1MC00NGUzLWE1YTgtZThjN2VmNDNmZTlkIiB0eXBlUmVmPSJudW1iZXIiPgogICAgICAgICAgPHRleHQ+Q29udHJhY3RfVmFsdWU8L3RleHQ+CiAgICAgICAgPC9pbnB1dEV4cHJlc3Npb24+CiAgICAgIDwvaW5wdXQ+CiAgICAgIDxvdXRwdXQgaWQ9Im91dHB1dEV4cHJlc3Npb25fZTIxODA5YWUtMmY2ZS00MjFiLWI5NGQtYzAzNWU3M2Y5MmZjIiBsYWJlbD0iQ29udHJhY3QgQXBwcm92ZXIiIG5hbWU9IkNvbnRyYWN0X0FwcHJvdmVyIiB0eXBlUmVmPSJzdHJpbmciPjwvb3V0cHV0PgogICAgICA8cnVsZT4KICAgICAgICA8aW5wdXRFbnRyeSBpZD0iaW5wdXRFbnRyeV9iMDRjYTkyOC1hZmE2LTQzZjYtYjM0My0wOWNiMzFkNzFjNzBfMSI+CiAgICAgICAgICA8dGV4dD48IVtDREFUQVs9PSAiQWNhZGVteSJdXT48L3RleHQ+CiAgICAgICAgPC9pbnB1dEVudHJ5PgogICAgICAgIDxpbnB1dEVudHJ5IGlkPSJpbnB1dEVudHJ5X2QxOGE4ZTE5LWM0NTAtNDRlMy1hNWE4LWU4YzdlZjQzZmU5ZF8xIj4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWz49IDI1MDAwXV0+PC90ZXh0PgogICAgICAgIDwvaW5wdXRFbnRyeT4KICAgICAgICA8b3V0cHV0RW50cnkgaWQ9Im91dHB1dEVudHJ5X2UyMTgwOWFlLTJmNmUtNDIxYi1iOTRkLWMwMzVlNzNmOTJmY18xIj4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWyJKb2huIERvZSJdXT48L3RleHQ+CiAgICAgICAgPC9vdXRwdXRFbnRyeT4KICAgICAgPC9ydWxlPgogICAgICA8cnVsZT4KICAgICAgICA8aW5wdXRFbnRyeSBpZD0iaW5wdXRFbnRyeV9iMDRjYTkyOC1hZmE2LTQzZjYtYjM0My0wOWNiMzFkNzFjNzBfMiI+CiAgICAgICAgICA8dGV4dD48IVtDREFUQVs9PSAiQWNhZGVteSJdXT48L3RleHQ+CiAgICAgICAgPC9pbnB1dEVudHJ5PgogICAgICAgIDxpbnB1dEVudHJ5IGlkPSJpbnB1dEVudHJ5X2QxOGE4ZTE5LWM0NTAtNDRlMy1hNWE4LWU4YzdlZjQzZmU5ZF8yIj4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWz09IDEwMDAwXV0+PC90ZXh0PgogICAgICAgIDwvaW5wdXRFbnRyeT4KICAgICAgICA8b3V0cHV0RW50cnkgaWQ9Im91dHB1dEVudHJ5X2UyMTgwOWFlLTJmNmUtNDIxYi1iOTRkLWMwMzVlNzNmOTJmY18yIj4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWyJLcmlzdGVuIEZpc2hlciJdXT48L3RleHQ+CiAgICAgICAgPC9vdXRwdXRFbnRyeT4KICAgICAgPC9ydWxlPgogICAgICA8cnVsZT4KICAgICAgICA8aW5wdXRFbnRyeSBpZD0iaW5wdXRFbnRyeV9iMDRjYTkyOC1hZmE2LTQzZjYtYjM0My0wOWNiMzFkNzFjNzBfMyI+CiAgICAgICAgICA8dGV4dD48IVtDREFUQVs9PSAiSGVhbHRoIl1dPjwvdGV4dD4KICAgICAgICA8L2lucHV0RW50cnk+CiAgICAgICAgPGlucHV0RW50cnkgaWQ9ImlucHV0RW50cnlfZDE4YThlMTktYzQ1MC00NGUzLWE1YTgtZThjN2VmNDNmZTlkXzMiPgogICAgICAgICAgPHRleHQ+PCFbQ0RBVEFbPCAxMDAwMF1dPjwvdGV4dD4KICAgICAgICA8L2lucHV0RW50cnk+CiAgICAgICAgPG91dHB1dEVudHJ5IGlkPSJvdXRwdXRFbnRyeV9lMjE4MDlhZS0yZjZlLTQyMWItYjk0ZC1jMDM1ZTczZjkyZmNfMyI+CiAgICAgICAgICA8dGV4dD48IVtDREFUQVsiS2F0ZSBNaWxsZXIiXV0+PC90ZXh0PgogICAgICAgIDwvb3V0cHV0RW50cnk+CiAgICAgIDwvcnVsZT4KICAgICAgPHJ1bGU+CiAgICAgICAgPGlucHV0RW50cnkgaWQ9ImlucHV0RW50cnlfYjA0Y2E5MjgtYWZhNi00M2Y2LWIzNDMtMDljYjMxZDcxYzcwXzQiPgogICAgICAgICAgPHRleHQ+PCFbQ0RBVEFbPT0gIkhlYWx0aCJdXT48L3RleHQ+CiAgICAgICAgPC9pbnB1dEVudHJ5PgogICAgICAgIDxpbnB1dEVudHJ5IGlkPSJpbnB1dEVudHJ5X2QxOGE4ZTE5LWM0NTAtNDRlMy1hNWE4LWU4YzdlZjQzZmU5ZF80Ij4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWzw9IDE1MDAwXV0+PC90ZXh0PgogICAgICAgIDwvaW5wdXRFbnRyeT4KICAgICAgICA8b3V0cHV0RW50cnkgaWQ9Im91dHB1dEVudHJ5X2UyMTgwOWFlLTJmNmUtNDIxYi1iOTRkLWMwMzVlNzNmOTJmY180Ij4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWyJUb20gUGVyZXosIEtyaXN0ZW4gRmlzaGVyIl1dPjwvdGV4dD4KICAgICAgICA8L291dHB1dEVudHJ5PgogICAgICA8L3J1bGU+CiAgICAgIDxydWxlPgogICAgICAgIDxpbnB1dEVudHJ5IGlkPSJpbnB1dEVudHJ5X2IwNGNhOTI4LWFmYTYtNDNmNi1iMzQzLTA5Y2IzMWQ3MWM3MF81Ij4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWz09ICJIZWFsdGgiXV0+PC90ZXh0PgogICAgICAgIDwvaW5wdXRFbnRyeT4KICAgICAgICA8aW5wdXRFbnRyeSBpZD0iaW5wdXRFbnRyeV9kMThhOGUxOS1jNDUwLTQ0ZTMtYTVhOC1lOGM3ZWY0M2ZlOWRfNSI+CiAgICAgICAgICA8dGV4dD48IVtDREFUQVs+PSAyNTAwMF1dPjwvdGV4dD4KICAgICAgICA8L2lucHV0RW50cnk+CiAgICAgICAgPG91dHB1dEVudHJ5IGlkPSJvdXRwdXRFbnRyeV9lMjE4MDlhZS0yZjZlLTQyMWItYjk0ZC1jMDM1ZTczZjkyZmNfNSI+CiAgICAgICAgICA8dGV4dD48IVtDREFUQVsiRmluYW5jZSBUZWFtIl1dPjwvdGV4dD4KICAgICAgICA8L291dHB1dEVudHJ5PgogICAgICA8L3J1bGU+CiAgICAgIDxydWxlPgogICAgICAgIDxpbnB1dEVudHJ5IGlkPSJpbnB1dEVudHJ5X2IwNGNhOTI4LWFmYTYtNDNmNi1iMzQzLTA5Y2IzMWQ3MWM3MF82Ij4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWz09ICJJbnN1cmFuY2UiXV0+PC90ZXh0PgogICAgICAgIDwvaW5wdXRFbnRyeT4KICAgICAgICA8aW5wdXRFbnRyeSBpZD0iaW5wdXRFbnRyeV9kMThhOGUxOS1jNDUwLTQ0ZTMtYTVhOC1lOGM3ZWY0M2ZlOWRfNiI+CiAgICAgICAgICA8dGV4dD48IVtDREFUQVs+IDEwMDAwXV0+PC90ZXh0PgogICAgICAgIDwvaW5wdXRFbnRyeT4KICAgICAgICA8b3V0cHV0RW50cnkgaWQ9Im91dHB1dEVudHJ5X2UyMTgwOWFlLTJmNmUtNDIxYi1iOTRkLWMwMzVlNzNmOTJmY182Ij4KICAgICAgICAgIDx0ZXh0PjwhW0NEQVRBWyJLYXRlIE1pbGxlciJdXT48L3RleHQ+CiAgICAgICAgPC9vdXRwdXRFbnRyeT4KICAgICAgPC9ydWxlPgogICAgICA8cnVsZT4KICAgICAgICA8aW5wdXRFbnRyeSBpZD0iaW5wdXRFbnRyeV9iMDRjYTkyOC1hZmE2LTQzZjYtYjM0My0wOWNiMzFkNzFjNzBfNyI+CiAgICAgICAgICA8dGV4dD48IVtDREFUQVs9PSAiSW5zdXJhbmNlIl1dPjwvdGV4dD4KICAgICAgICA8L2lucHV0RW50cnk+CiAgICAgICAgPGlucHV0RW50cnkgaWQ9ImlucHV0RW50cnlfZDE4YThlMTktYzQ1MC00NGUzLWE1YTgtZThjN2VmNDNmZTlkXzciPgogICAgICAgICAgPHRleHQ+PCFbQ0RBVEFbPiAyNTAwMF1dPjwvdGV4dD4KICAgICAgICA8L2lucHV0RW50cnk+CiAgICAgICAgPG91dHB1dEVudHJ5IGlkPSJvdXRwdXRFbnRyeV9lMjE4MDlhZS0yZjZlLTQyMWItYjk0ZC1jMDM1ZTczZjkyZmNfNyI+CiAgICAgICAgICA8dGV4dD48IVtDREFUQVsiSm9obiBEb2UiXV0+PC90ZXh0PgogICAgICAgIDwvb3V0cHV0RW50cnk+CiAgICAgIDwvcnVsZT4KICAgIDwvZGVjaXNpb25UYWJsZT4KICA8L2RlY2lzaW9uPgogIDxkbW5kaTpETU5EST48L2RtbmRpOkRNTkRJPgo8L2RlZmluaXRpb25zPg==\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{decision_url}}/v1/runtime/decision-models",
+							"host": [
+								"{{decision_url}}"
+							],
+							"path": [
+								"v1",
+								"runtime",
+								"decision-models"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deploy a first hit policy decision model with JSON",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData=JSON.parse(responseBody);\r",
+									"pm.environment.set(\"decisionKey\", jsonData.key);\r",
+									"pm.environment.set(\"modelId\",jsonData.id);\r",
+									"\r",
+									"pm.globals.set(\"id\", \"{{subscription-id}}\");\r",
+									"\r",
+									"pm.test(\"Status code is \" + pm.response.code +\" and decisionKey is \"+ jsonData.key, function () {\r",
+									"\r",
+									"  pm.response.to.have.status(201);\r",
+									"\r",
+									"  pm.expect(jsonData.key).to.eql(pm.variables.get(\"model-key\"));\r",
+									"  });\r",
+									"\r",
+									" pm.test(\"Status code is \" + pm.response.status,function(){\r",
+									"  pm.response.to.have.status(\"Created\")\r",
+									"  });\r",
+									"\r",
+									"  pm.test(\"tenantId is \"+ jsonData.tenantId,function(){\r",
+									"      pm.expect(jsonData.tenantId).to.eql(pm.variables.get(\"tenant_id\"));\r",
+									"  });\r",
+									"  \r",
+									"pm.test(\"subscriptionId is \"+ jsonData.subscriptionId,function(){\r",
+									"      pm.expect(jsonData.subscriptionId).to.eql(pm.variables.get(\"subscription-id\"));\r",
+									"  });\r",
+									"\r",
+									"  pm.test(\"name is \"+ jsonData.name,function(){\r",
+									"      pm.expect(jsonData.name).to.eql(pm.variables.get(\"model-name\"));\r",
+									"  });\r",
+									"\r",
+									"  pm.test(\"deploymentSpace is \"+ jsonData.deploymentSpace,function(){\r",
+									"      pm.expect(jsonData.deploymentSpace).to.eql(pm.variables.get(\"deploymentSpace\"));\r",
+									"  });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"modelType\": \"json\",\n    \"modelContent\": {\n        \"id\": \"\",\n        \"version\": 1,\n        \"name\": \"Dynamiccontractapproval-firsthit\",\n        \"key\": \"Contract_approval\",\n        \"category\": \"Category1\",\n        \"description\": \"\",\n        \"namespace\": \"\",\n        \"hitIndicator\": \"FIRST\",\n        \"inputExpressions\": [\n            {\n                \"id\": \"1\",\n                \"type\": \"string\",\n                \"variableId\": \"Contract_Category\",\n                \"variableType\": null,\n                \"entries\": null,\n                \"label\": \"Contract Category\"\n            },\n            {\n                \"id\": \"input_1672375570425\",\n                \"type\": \"number\",\n                \"variableId\": \"Contract_Value\",\n                \"entries\": null,\n                \"label\": \"Contract Value\"\n            }\n        ],\n        \"outputExpressions\": [\n            {\n                \"id\": \"2\",\n                \"type\": \"string\",\n                \"variableId\": \"Contract_Approver\",\n                \"variableType\": null,\n                \"entries\": null,\n                \"label\": \"Contract Approver\"\n            }\n        ],\n        \"rules\": [\n            {\n                \"2\": \"John Doe\",\n                \"input_1672375570425_expression\": \"25000\",\n                \"input_1672375570425_operator\": \">=\",\n                \"1_expression\": \"Academy\",\n                \"1_operator\": \"==\"\n            },\n            {\n                \"2\": \"Kristen Fisher\",\n                \"input_1672375570425_expression\": \"10000\",\n                \"input_1672375570425_operator\": \"==\",\n                \"1_expression\": \"Academy\",\n                \"1_operator\": \"==\"\n            },\n            {\n                \"2\": \"Kate Miller\",\n                \"1_operator\": \"==\",\n                \"1_expression\": \"Health\",\n                \"input_1672375570425_operator\": \"<\",\n                \"input_1672375570425_expression\": \"10000\"\n            },\n            {\n                \"2\": \"Tom Perez, Kristen Fisher\",\n                \"input_1672375570425_expression\": \"15000\",\n                \"input_1672375570425_operator\": \"<=\",\n                \"1_expression\": \"Health\",\n                \"1_operator\": \"==\"\n            },\n            {\n                \"2\": \"Finance Team\",\n                \"input_1672375570425_expression\": \"25000\",\n                \"input_1672375570425_operator\": \">=\",\n                \"1_expression\": \"Health\",\n                \"1_operator\": \"==\"\n            },\n            {\n                \"2\": \"Kate Miller\",\n                \"input_1672375570425_expression\": \"10000\",\n                \"input_1672375570425_operator\": \">\",\n                \"1_expression\": \"Insurance\",\n                \"1_operator\": \"==\"\n            },\n            {\n                \"2\": \"John Doe\",\n                \"input_1672375570425_expression\": \"25000\",\n                \"input_1672375570425_operator\": \">\",\n                \"1_expression\": \"Insurance\",\n                \"1_operator\": \"==\"\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{decision_url}}/v1/runtime/decision-models",
+							"host": [
+								"{{decision_url}}"
+							],
+							"path": [
+								"v1",
+								"runtime",
+								"decision-models"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list of deployed decision models",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData=JSON.parse(responseBody);\r",
+									"pm.test(\"Status code is \" + pm.response.code,function(){\r",
+									"  pm.response.to.have.status(200)\r",
+									"  });\r",
+									"\r",
+									"  pm.test(\"Status code is \" + pm.response.status,function(){\r",
+									"  pm.response.to.have.status(\"OK\")\r",
+									"  });\r",
+									"\r",
+									" const length=jsonData[\"_embedded\"][\"decision-models\"].length;\r",
+									" \r",
+									"\r",
+									"for(var i=0 ; i<length ; i++){\r",
+									"    if(jsonData[\"_embedded\"][\"decision-models\"][i].name!=\"\"){\r",
+									" pm.test(\"Deployed model name is \"+jsonData[\"_embedded\"][\"decision-models\"][i].name);\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{decision_url}}/v1/runtime/decision-models?latest=true",
+							"host": [
+								"{{decision_url}}"
+							],
+							"path": [
+								"v1",
+								"runtime",
+								"decision-models"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "DynamicContractAssignments",
+									"disabled": true
+								},
+								{
+									"key": "latest",
+									"value": "true"
+								},
+								{
+									"key": "sort",
+									"value": "version",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "count",
+									"value": "10",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "convert model content",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData=JSON.parse(responseBody);\r",
+									"\r",
+									"pm.test(\"Status code is \" + pm.response.code,function(){\r",
+									"  pm.response.to.have.status(200)\r",
+									"  });\r",
+									"  \r",
+									"pm.test(\"Status code is \" + pm.response.status,function(){\r",
+									"  pm.response.to.have.status(\"OK\")\r",
+									"  });\r",
+									"\r",
+									"pm.test(\"Content type is \"+ jsonData.modelType,function(){\r",
+									"      pm.expect( jsonData.modelType).to.eql(\"xml\");\r",
+									"  });\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"modelType\": \"json\",\r\n    \"modelContent\": {\r\n        \"id\": \"definition_a488407c-1a5f-11eb-91de-4a89e7666665\",\r\n        \"key\": \"quickdecision\",\r\n        \"name\": \"\",\r\n        \"namespace\": \"http://www.flowable.org/dmn\",\r\n        \"version\": \"3\",\r\n        \"description\": null,\r\n        \"hitIndicator\": \"FIRST\",\r\n        \"inputExpressions\": [\r\n            {\r\n                \"id\": \"inputExpression_1\",\r\n                \"type\": \"string\",\r\n                \"label\": \"city\",\r\n                \"variableId\": \"city\"\r\n            }\r\n        ],\r\n        \"outputExpressions\": [\r\n            {\r\n                \"id\": \"outputExpression_2\",\r\n                \"type\": \"string\",\r\n                \"label\": \"living standards\",\r\n                \"variableId\": \"living_standards\"\r\n            }\r\n        ],\r\n        \"rules\": [\r\n            {\r\n                \"inputExpression_1_operator\": \"==\",\r\n                \"inputExpression_1_expression\": \"Hyderabad\",\r\n                \"outputExpression_2\": \"Great\"\r\n            },\r\n            {\r\n                \"inputExpression_1_operator\": \"==\",\r\n                \"inputExpression_1_expression\": \"Bangalore\",\r\n                \"outputExpression_2\": \"Great\"\r\n            },\r\n            {\r\n                \"inputExpression_1_operator\": \"==\",\r\n                \"inputExpression_1_expression\": \"Chennai\",\r\n                \"outputExpression_2\": \"Good\"\r\n            },\r\n            {\r\n                \"inputExpression_1_operator\": \"==\",\r\n                \"inputExpression_1_expression\": \"Vizag\",\r\n                \"outputExpression_2\": \"Great\"\r\n            },\r\n            {\r\n                \"inputExpression_1_operator\": \"==\",\r\n                \"inputExpression_1_expression\": \"Washington\",\r\n                \"outputExpression_2\": \"Average\"\r\n            },\r\n            {\r\n                \"inputExpression_1_operator\": \"==\",\r\n                \"inputExpression_1_expression\": \"Detroit\",\r\n                \"outputExpression_2\": \"Poor\"\r\n            }\r\n        ]\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{decision_url}}/v1/decision-models/conversion",
+							"host": [
+								"{{decision_url}}"
+							],
+							"path": [
+								"v1",
+								"decision-models",
+								"conversion"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DMN Rule Service",
+			"item": [
+				{
+					"name": "execute a first hit polcy decision",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code,function(){\r",
+									"  pm.response.to.have.status(201)\r",
+									"  });\r",
+									"\r",
+									"  pm.test(\"Status code is \" + pm.response.status,function(){\r",
+									"  pm.response.to.have.status(\"Created\")\r",
+									"  });\r",
+									"\r",
+									" const response=pm.response.json();\r",
+									"\r",
+									" pm.test(\"output variable name is \"+ response.resultVariables[0][0].name,function(){\r",
+									"      pm.expect(response.resultVariables[0][0].name).to.eql(pm.variables.get(\"rule-name\"));\r",
+									"  });\r",
+									"\r",
+									"console.log(pm.variables.get(\"type\"));\r",
+									"\r",
+									"   pm.test(\"value is \"+ response.resultVariables[0][0].value,function(){\r",
+									"      pm.expect(response.resultVariables[0][0].value).to.eql(pm.variables.get(\"value\"));\r",
+									"  });\r",
+									"\r",
+									"\r",
+									" pm.test(\"type is \"+ response.resultVariables[0][0].type,function(){\r",
+									"      pm.expect(response.resultVariables[0][0].type).to.eql(pm.variables.get(\"type\"));\r",
+									"  });\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"decisionKey\": \"{{firstHit_modelKey}}\",\r\n    \"inputVariables\": [\r\n        {\r\n            \"name\": \"Contract_Category\",\r\n            \"value\": \"Insurance\"\r\n        },\r\n        {\r\n            \"name\": \"Contract_Value\",\r\n            \"value\": \"50000\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{decision_url}}/v1/execute",
+							"host": [
+								"{{decision_url}}"
+							],
+							"path": [
+								"v1",
+								"execute"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "execute Decision",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"decisionKey\": \"{{decisionKey}}\",\r\n  \"inputVariables\": [\r\n    {\r\n      \"name\": \"city\",\r\n      \"value\": \"Hyderabad\"\r\n    }\r\n   ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{decision_url}}/v1/execute",
+									"host": [
+										"{{decision_url}}"
+									],
+									"path": [
+										"v1",
+										"execute"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 20 Dec 2022 10:09:42 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "cache-control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "expires",
+									"value": "0"
+								},
+								{
+									"key": "leap-request-context",
+									"value": "requestId=9eZt08bS8KFfiJLmaMxhEU"
+								},
+								{
+									"key": "pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "strict-transport-security",
+									"value": "max-age=31536000 ; includeSubDomains"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-frame-options",
+									"value": "DENY"
+								},
+								{
+									"key": "x-vcap-request-id",
+									"value": "1b825d1b-db1e-4ad3-40d3-fdaa1e5caa84"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Access-Control-Expose-Headers",
+									"value": "Content-Disposition, Content-Length"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "origin, x-requested-with, accept, authorization, content-type, x-view-request-id"
+								},
+								{
+									"key": "Access-Control-Max-Age",
+									"value": "3628800"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "HEAD, GET, DELETE, PUT, POST, PATCH, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "false"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"resultVariables\": [\n        [\n            {\n                \"name\": \"living_standards\",\n                \"type\": \"string\",\n                \"value\": \"Great\"\n            }\n        ]\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "execute a rule order decision",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code,function(){\r",
+									"  pm.response.to.have.status(201)\r",
+									"  });\r",
+									"\r",
+									"  pm.test(\"Status code is \" + pm.response.status,function(){\r",
+									"  pm.response.to.have.status(\"Created\")\r",
+									"  });\r",
+									"\r",
+									" const response=pm.response.json();\r",
+									"\r",
+									" pm.test(\"output variable name is \"+ response.resultVariables[0][0].name,function(){\r",
+									"      pm.expect(response.resultVariables[0][0].name).to.eql(pm.variables.get(\"rule-name\"));\r",
+									"  });\r",
+									"\r",
+									"console.log(pm.variables.get(\"type\"));\r",
+									"\r",
+									"   pm.test(\"value is \"+ response.resultVariables[0][0].value,function(){\r",
+									"      pm.expect(response.resultVariables[0][0].value).to.eql(pm.variables.get(\"value\"));\r",
+									"  });\r",
+									"\r",
+									"\r",
+									" pm.test(\"type is \"+ response.resultVariables[0][0].type,function(){\r",
+									"      pm.expect(response.resultVariables[0][0].type).to.eql(pm.variables.get(\"type\"));\r",
+									"  });\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"decisionKey\": \"{{ruleOrder_modelKey}}\",\r\n    \"inputVariables\": [\r\n        {\r\n            \"name\": \"Contract_Category\",\r\n            \"value\": \"Insurance\"\r\n        },\r\n        {\r\n            \"name\": \"Contract_Value\",\r\n            \"value\": \"50000\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{decision_url}}/v1/execute",
+							"host": [
+								"{{decision_url}}"
+							],
+							"path": [
+								"v1",
+								"execute"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "execute Decision",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"decisionKey\": \"{{decisionKey}}\",\r\n  \"inputVariables\": [\r\n    {\r\n      \"name\": \"city\",\r\n      \"value\": \"Hyderabad\"\r\n    }\r\n   ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{decision_url}}/v1/execute",
+									"host": [
+										"{{decision_url}}"
+									],
+									"path": [
+										"v1",
+										"execute"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 20 Dec 2022 10:09:42 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "cache-control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "expires",
+									"value": "0"
+								},
+								{
+									"key": "leap-request-context",
+									"value": "requestId=9eZt08bS8KFfiJLmaMxhEU"
+								},
+								{
+									"key": "pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "strict-transport-security",
+									"value": "max-age=31536000 ; includeSubDomains"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-frame-options",
+									"value": "DENY"
+								},
+								{
+									"key": "x-vcap-request-id",
+									"value": "1b825d1b-db1e-4ad3-40d3-fdaa1e5caa84"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Access-Control-Expose-Headers",
+									"value": "Content-Disposition, Content-Length"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "origin, x-requested-with, accept, authorization, content-type, x-view-request-id"
+								},
+								{
+									"key": "Access-Control-Max-Age",
+									"value": "3628800"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "HEAD, GET, DELETE, PUT, POST, PATCH, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "false"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"resultVariables\": [\n        [\n            {\n                \"name\": \"living_standards\",\n                \"type\": \"string\",\n                \"value\": \"Great\"\n            }\n        ]\n    ]\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Clean-Up",
+			"item": [
+				{
+					"name": "delete a decision model",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Status code is \" + pm.response.code,function(){\r",
+									"  pm.response.to.have.status(204)\r",
+									"  });\r",
+									"\r",
+									"  pm.test(\"Status code is \" + pm.response.status,function(){\r",
+									"  pm.response.to.have.status(\"No Content\")\r",
+									"  });\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{decision_url}}/v1/runtime/decision-models/{{modelId}}",
+							"host": [
+								"{{decision_url}}"
+							],
+							"path": [
+								"v1",
+								"runtime",
+								"decision-models",
+								"{{modelId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Historic Decision Executions",
+			"item": [
+				{
+					"name": "get historic decision executions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData=JSON.parse(responseBody);\r",
+									"pm.test(\"Status code is \" + pm.response.code,function(){\r",
+									"  pm.response.to.have.status(200)\r",
+									"  });\r",
+									"\r",
+									"  pm.test(\"Status code is \" + pm.response.status,function(){\r",
+									"  pm.response.to.have.status(\"OK\")\r",
+									"  });\r",
+									"\r",
+									" const length=jsonData[\"_embedded\"][\"historic-decision-executions\"].length;\r",
+									"\r",
+									"for(var i=0 ; i<length ; i++){\r",
+									"    if(jsonData[\"_embedded\"][\"historic-decision-executions\"][i].decisionKey!=\"\"){\r",
+									" pm.test(\"Deployed model name is \"+jsonData[\"_embedded\"][\"historic-decision-executions\"][i].decisionKey);\r",
+									"    }\r",
+									"   \r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{decision_url}}/v1/historic-decision-executions",
+							"host": [
+								"{{decision_url}}"
+							],
+							"path": [
+								"v1",
+								"historic-decision-executions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Version",
+			"item": [
+				{
+					"name": "get Version",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{decision_url}}/version",
+							"host": [
+								"{{decision_url}}"
+							],
+							"path": [
+								"version"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{tenant_access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
