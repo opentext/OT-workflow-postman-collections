@@ -1,0 +1,2021 @@
+{
+	"info": {
+		"_postman_id": "e2c5b6e4-ce25-4287-b4ed-af0ee52e89b0",
+		"name": "CMMN Golden copy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "#0 Get authentication token",
+			"item": [
+				{
+					"name": "OTDS Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"otdsaccesstoken\", jsonData.access_token);\r",
+									"postman.setEnvironmentVariable(\"token\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{app_confclient_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{app_confclient_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{app_confclient_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{app_confclient_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{user_name}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "readwrite",
+									"type": "text"
+								},
+								{
+									"key": "client_data",
+									"value": "subName={{subscriptionName}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://{{otdshost}}/otdstenant/{{tenant_id}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"{{otdshost}}"
+							],
+							"path": [
+								"otdstenant",
+								"{{tenant_id}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "#1 Deploy a case",
+			"item": [
+				{
+					"name": "Create a new executable case model",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData=JSON.parse(responseBody);\r",
+									"\r",
+									"pm.environment.set(\"caseDefinitionId\", jsonData.caseDefinitionId);\r",
+									"\r",
+									"pm.environment.set(\"caseKey\",jsonData.key);\r",
+									"\r",
+									"pm.environment.set(\"parentDeploymentId\",jsonData.parentDeploymentId);\r",
+									"\r",
+									"pm.environment.set(\"tenantId\",jsonData.tenantId);\r",
+									"\r",
+									"pm.environment.set(\"subscriptionId\",jsonData.subscriptionId);\r",
+									"\r",
+									"pm.environment.set(\"name\",jsonData.name);\r",
+									"\r",
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"modelType\": \"xml\",\r\n    \"modelContent\" : \"PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPGRlZmluaXRpb25zIHhtbG5zPSJodHRwOi8vd3d3Lm9tZy5vcmcvc3BlYy9DTU1OLzIwMTUxMTA5L01PREVMIiB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB4bWxuczpmbG93YWJsZT0iaHR0cDovL2Zsb3dhYmxlLm9yZy9jbW1uIiB4bWxuczpjbW1uZGk9Imh0dHA6Ly93d3cub21nLm9yZy9zcGVjL0NNTU4vMjAxNTExMDkvQ01NTkRJIiB4bWxuczpkYz0iaHR0cDovL3d3dy5vbWcub3JnL3NwZWMvQ01NTi8yMDE1MTEwOS9EQyIgeG1sbnM6ZGk9Imh0dHA6Ly93d3cub21nLm9yZy9zcGVjL0NNTU4vMjAxNTExMDkvREkiIHRhcmdldE5hbWVzcGFjZT0iaHR0cDovL2Zsb3dhYmxlLm9yZy9jbW1uIj4KICA8Y2FzZSBpZD0iTXlDYXNlMTYzNjUxNTY5NjQzMyIgbmFtZT0iTmV3IEhpcmUiIGZsb3dhYmxlOmluaXRpYXRvclZhcmlhYmxlTmFtZT0iaW5pdGlhdG9yIj4KICAgIDxkb2N1bWVudGF0aW9uPnRoaXMgbW9kZWwgaXMgZm9yIHRoZSBuZXcgaGlyZTwvZG9jdW1lbnRhdGlvbj4KICAgIDxjYXNlUGxhbk1vZGVsIGlkPSJOZXdIaXJlIiBuYW1lPSJOZXdIaXJlIiBmbG93YWJsZTpmb3JtRmllbGRWYWxpZGF0aW9uPSJ0cnVlIj4KICAgICAgPHBsYW5JdGVtIGlkPSJwbGFuSXRlbTUiIG5hbWU9IkJlZm9yZSBKb2luaW5nIiBkZWZpbml0aW9uUmVmPSJwdDEiPjwvcGxhbkl0ZW0+CiAgICAgIDxwbGFuSXRlbSBpZD0icGxhbkl0ZW05IiBuYW1lPSJBZnRlciBKb2luaW5nIiBkZWZpbml0aW9uUmVmPSJwdDIiPgogICAgICAgIDxlbnRyeUNyaXRlcmlvbiBpZD0ic2lkLUEzRjg5MTJFLThFNUEtNEY2QS04OEYwLUFENzk3MkZDRDMyMCIgZmxvd2FibGU6c2VudHJ5UmVmPSJzZW50cnkyIj48L2VudHJ5Q3JpdGVyaW9uPgogICAgICA8L3BsYW5JdGVtPgogICAgICA8cGxhbkl0ZW0gaWQ9InBsYW5JdGVtMTAiIG5hbWU9IlJlamVjdCBKb2IiIGRlZmluaXRpb25SZWY9InN0MyI+PC9wbGFuSXRlbT4KICAgICAgPHNlbnRyeSBpZD0ic2VudHJ5MiI+PC9zZW50cnk+CiAgICAgIDxzZW50cnkgaWQ9InNlbnRyeTMiPgogICAgICAgIDxwbGFuSXRlbU9uUGFydCBpZD0ic2VudHJ5T25QYXJ0MSIgc291cmNlUmVmPSJwbGFuSXRlbTEwIj4KICAgICAgICAgIDxzdGFuZGFyZEV2ZW50PmNvbXBsZXRlPC9zdGFuZGFyZEV2ZW50PgogICAgICAgIDwvcGxhbkl0ZW1PblBhcnQ+CiAgICAgIDwvc2VudHJ5PgogICAgICA8c3RhZ2UgaWQ9InB0MSIgbmFtZT0iQmVmb3JlIEpvaW5pbmciPgogICAgICAgIDxwbGFuSXRlbSBpZD0icGxhbkl0ZW0xIiBuYW1lPSJGaXggRGF0ZSBPZiBKb2luaW5nIiBkZWZpbml0aW9uUmVmPSJpZDMiPjwvcGxhbkl0ZW0+CiAgICAgICAgPHBsYW5JdGVtIGlkPSJwbGFuSXRlbTIiIG5hbWU9IkFsbG9jYXRlIE9mZmljZSIgZGVmaW5pdGlvblJlZj0iaWQyIj48L3BsYW5JdGVtPgogICAgICAgIDxwbGFuSXRlbSBpZD0icGxhbkl0ZW0zIiBuYW1lPSJDcmVhdGUgT2ZmaWNlIEVtYWlsIEFkZHJlc3MiIGRlZmluaXRpb25SZWY9ImlkMSI+PC9wbGFuSXRlbT4KICAgICAgICA8cGxhbkl0ZW0gaWQ9InBsYW5JdGVtNCIgbmFtZT0iU2VuZCBKb2luaW5nIExldHRlciBUbyBDYW5kaWRhdGUiIGRlZmluaXRpb25SZWY9ImlkNCI+CiAgICAgICAgICA8ZW50cnlDcml0ZXJpb24gaWQ9InNpZC1ERDVGNERDMC1EQ0M4LTQ0MEUtOUZBOC0wNEI1REFCQzY2REIiIGZsb3dhYmxlOnNlbnRyeVJlZj0ic2VudHJ5MSI+PC9lbnRyeUNyaXRlcmlvbj4KICAgICAgICA8L3BsYW5JdGVtPgogICAgICAgIDxzZW50cnkgaWQ9InNlbnRyeTEiPjwvc2VudHJ5PgogICAgICAgIDxodW1hblRhc2sgaWQ9ImlkMyIgbmFtZT0iRml4IERhdGUgT2YgSm9pbmluZyIgZmxvd2FibGU6YXNzaWduZWU9IiR7aHJ9IiBmbG93YWJsZTpmb3JtRmllbGRWYWxpZGF0aW9uPSJ0cnVlIj4KICAgICAgICAgIDxleHRlbnNpb25FbGVtZW50cz4KICAgICAgICAgICAgPG1vZGVsZXI6aW5pdGlhdG9yLWNhbi1jb21wbGV0ZSB4bWxuczptb2RlbGVyPSJodHRwOi8vZmxvd2FibGUub3JnL21vZGVsZXIiPjwhW0NEQVRBW2ZhbHNlXV0+PC9tb2RlbGVyOmluaXRpYXRvci1jYW4tY29tcGxldGU+CiAgICAgICAgICA8L2V4dGVuc2lvbkVsZW1lbnRzPgogICAgICAgIDwvaHVtYW5UYXNrPgogICAgICAgIDxodW1hblRhc2sgaWQ9ImlkMiIgbmFtZT0iQWxsb2NhdGUgT2ZmaWNlIiBmbG93YWJsZTphc3NpZ25lZT0iJHtocn0iIGZsb3dhYmxlOmZvcm1GaWVsZFZhbGlkYXRpb249InRydWUiPgogICAgICAgICAgPGV4dGVuc2lvbkVsZW1lbnRzPgogICAgICAgICAgICA8bW9kZWxlcjppbml0aWF0b3ItY2FuLWNvbXBsZXRlIHhtbG5zOm1vZGVsZXI9Imh0dHA6Ly9mbG93YWJsZS5vcmcvbW9kZWxlciI+PCFbQ0RBVEFbZmFsc2VdXT48L21vZGVsZXI6aW5pdGlhdG9yLWNhbi1jb21wbGV0ZT4KICAgICAgICAgIDwvZXh0ZW5zaW9uRWxlbWVudHM+CiAgICAgICAgPC9odW1hblRhc2s+CiAgICAgICAgPGh1bWFuVGFzayBpZD0iaWQxIiBuYW1lPSJDcmVhdGUgT2ZmaWNlIEVtYWlsIEFkZHJlc3MiIGZsb3dhYmxlOmFzc2lnbmVlPSIke2hyfSIgZmxvd2FibGU6Zm9ybUZpZWxkVmFsaWRhdGlvbj0idHJ1ZSI+CiAgICAgICAgICA8ZXh0ZW5zaW9uRWxlbWVudHM+CiAgICAgICAgICAgIDxtb2RlbGVyOmluaXRpYXRvci1jYW4tY29tcGxldGUgeG1sbnM6bW9kZWxlcj0iaHR0cDovL2Zsb3dhYmxlLm9yZy9tb2RlbGVyIj48IVtDREFUQVtmYWxzZV1dPjwvbW9kZWxlcjppbml0aWF0b3ItY2FuLWNvbXBsZXRlPgogICAgICAgICAgPC9leHRlbnNpb25FbGVtZW50cz4KICAgICAgICA8L2h1bWFuVGFzaz4KICAgICAgICA8aHVtYW5UYXNrIGlkPSJpZDQiIG5hbWU9IlNlbmQgSm9pbmluZyBMZXR0ZXIgVG8gQ2FuZGlkYXRlIiBmbG93YWJsZTphc3NpZ25lZT0iJHtocn0iIGZsb3dhYmxlOmZvcm1GaWVsZFZhbGlkYXRpb249InRydWUiPgogICAgICAgICAgPGV4dGVuc2lvbkVsZW1lbnRzPgogICAgICAgICAgICA8bW9kZWxlcjppbml0aWF0b3ItY2FuLWNvbXBsZXRlIHhtbG5zOm1vZGVsZXI9Imh0dHA6Ly9mbG93YWJsZS5vcmcvbW9kZWxlciI+PCFbQ0RBVEFbZmFsc2VdXT48L21vZGVsZXI6aW5pdGlhdG9yLWNhbi1jb21wbGV0ZT4KICAgICAgICAgIDwvZXh0ZW5zaW9uRWxlbWVudHM+CiAgICAgICAgPC9odW1hblRhc2s+CiAgICAgIDwvc3RhZ2U+CiAgICAgIDxzdGFnZSBpZD0icHQyIiBuYW1lPSJBZnRlciBKb2luaW5nIj4KICAgICAgICA8cGxhbkl0ZW0gaWQ9InBsYW5JdGVtNiIgbmFtZT0iT24gQm9hcmRpbmcgVHJhaW5pbmciIGRlZmluaXRpb25SZWY9InN0MSI+PC9wbGFuSXRlbT4KICAgICAgICA8cGxhbkl0ZW0gaWQ9InBsYW5JdGVtNyIgbmFtZT0iRmlsbCBJbiBOZWNlc3NhcnkgRm9ybXMgYW5kIFNpZ24gQWdyZWVtZW50cyIgZGVmaW5pdGlvblJlZj0ic3QyIj48L3BsYW5JdGVtPgogICAgICAgIDxwbGFuSXRlbSBpZD0icGxhbkl0ZW04IiBuYW1lPSJBbGxvY2F0ZSBPZmZpY2UgSUQgQ2FyZCIgZGVmaW5pdGlvblJlZj0ic3Q0Ij48L3BsYW5JdGVtPgogICAgICAgIDxodW1hblRhc2sgaWQ9InN0MSIgbmFtZT0iT24gQm9hcmRpbmcgVHJhaW5pbmciIGZsb3dhYmxlOmFzc2lnbmVlPSIke2NhbmRpZGF0ZX0iIGZsb3dhYmxlOmZvcm1GaWVsZFZhbGlkYXRpb249InRydWUiPgogICAgICAgICAgPGV4dGVuc2lvbkVsZW1lbnRzPgogICAgICAgICAgICA8bW9kZWxlcjppbml0aWF0b3ItY2FuLWNvbXBsZXRlIHhtbG5zOm1vZGVsZXI9Imh0dHA6Ly9mbG93YWJsZS5vcmcvbW9kZWxlciI+PCFbQ0RBVEFbZmFsc2VdXT48L21vZGVsZXI6aW5pdGlhdG9yLWNhbi1jb21wbGV0ZT4KICAgICAgICAgIDwvZXh0ZW5zaW9uRWxlbWVudHM+CiAgICAgICAgPC9odW1hblRhc2s+CiAgICAgICAgPGh1bWFuVGFzayBpZD0ic3QyIiBuYW1lPSJGaWxsIEluIE5lY2Vzc2FyeSBGb3JtcyBhbmQgU2lnbiBBZ3JlZW1lbnRzIiBmbG93YWJsZTphc3NpZ25lZT0iJHtjYW5kaWRhdGV9IiBmbG93YWJsZTpmb3JtRmllbGRWYWxpZGF0aW9uPSJ0cnVlIj4KICAgICAgICAgIDxleHRlbnNpb25FbGVtZW50cz4KICAgICAgICAgICAgPG1vZGVsZXI6aW5pdGlhdG9yLWNhbi1jb21wbGV0ZSB4bWxuczptb2RlbGVyPSJodHRwOi8vZmxvd2FibGUub3JnL21vZGVsZXIiPjwhW0NEQVRBW2ZhbHNlXV0+PC9tb2RlbGVyOmluaXRpYXRvci1jYW4tY29tcGxldGU+CiAgICAgICAgICA8L2V4dGVuc2lvbkVsZW1lbnRzPgogICAgICAgIDwvaHVtYW5UYXNrPgogICAgICAgIDxodW1hblRhc2sgaWQ9InN0NCIgbmFtZT0iQWxsb2NhdGUgT2ZmaWNlIElEIENhcmQiIGZsb3dhYmxlOmFzc2lnbmVlPSIke2hyfSIgZmxvd2FibGU6Zm9ybUZpZWxkVmFsaWRhdGlvbj0idHJ1ZSI+CiAgICAgICAgICA8ZXh0ZW5zaW9uRWxlbWVudHM+CiAgICAgICAgICAgIDxtb2RlbGVyOmluaXRpYXRvci1jYW4tY29tcGxldGUgeG1sbnM6bW9kZWxlcj0iaHR0cDovL2Zsb3dhYmxlLm9yZy9tb2RlbGVyIj48IVtDREFUQVtmYWxzZV1dPjwvbW9kZWxlcjppbml0aWF0b3ItY2FuLWNvbXBsZXRlPgogICAgICAgICAgPC9leHRlbnNpb25FbGVtZW50cz4KICAgICAgICA8L2h1bWFuVGFzaz4KICAgICAgPC9zdGFnZT4KICAgICAgPGh1bWFuVGFzayBpZD0ic3QzIiBuYW1lPSJSZWplY3QgSm9iIiBmbG93YWJsZTphc3NpZ25lZT0iJHtjYW5kaWRhdGV9IiBmbG93YWJsZTpmb3JtRmllbGRWYWxpZGF0aW9uPSJ0cnVlIj4KICAgICAgICA8ZXh0ZW5zaW9uRWxlbWVudHM+CiAgICAgICAgICA8bW9kZWxlcjppbml0aWF0b3ItY2FuLWNvbXBsZXRlIHhtbG5zOm1vZGVsZXI9Imh0dHA6Ly9mbG93YWJsZS5vcmcvbW9kZWxlciI+PCFbQ0RBVEFbZmFsc2VdXT48L21vZGVsZXI6aW5pdGlhdG9yLWNhbi1jb21wbGV0ZT4KICAgICAgICA8L2V4dGVuc2lvbkVsZW1lbnRzPgogICAgICA8L2h1bWFuVGFzaz4KICAgICAgPGV4aXRDcml0ZXJpb24gaWQ9InNpZC1EREIzRjBCMC00NTJGLTQwNkYtQUQ0OC0yMkUxRDIyMjI0NzEiIGZsb3dhYmxlOnNlbnRyeVJlZj0ic2VudHJ5MyI+PC9leGl0Q3JpdGVyaW9uPgogICAgPC9jYXNlUGxhbk1vZGVsPgogIDwvY2FzZT4KICA8Y21tbmRpOkNNTU5EST4KICAgIDxjbW1uZGk6Q01NTkRpYWdyYW0gaWQ9IkNNTU5EaWFncmFtX015Q2FzZTE2MzY1MTU2OTY0MzMiPgogICAgICA8Y21tbmRpOkNNTU5TaGFwZSBpZD0iQ01NTlNoYXBlX05ld0hpcmUiIGNtbW5FbGVtZW50UmVmPSJOZXdIaXJlIj4KICAgICAgICA8ZGM6Qm91bmRzIGhlaWdodD0iNTEyLjAiIHdpZHRoPSI4MTguMCIgeD0iMTUwLjAiIHk9IjMwLjAiPjwvZGM6Qm91bmRzPgogICAgICAgIDxjbW1uZGk6Q01NTkxhYmVsPjwvY21tbmRpOkNNTU5MYWJlbD4KICAgICAgPC9jbW1uZGk6Q01NTlNoYXBlPgogICAgICA8Y21tbmRpOkNNTU5TaGFwZSBpZD0iQ01NTlNoYXBlX3NpZC1EREIzRjBCMC00NTJGLTQwNkYtQUQ0OC0yMkUxRDIyMjI0NzEiIGNtbW5FbGVtZW50UmVmPSJzaWQtRERCM0YwQjAtNDUyRi00MDZGLUFENDgtMjJFMUQyMjIyNDcxIj4KICAgICAgICA8ZGM6Qm91bmRzIGhlaWdodD0iMjIuMCIgd2lkdGg9IjE0LjAiIHg9Ijk2Mi4wIiB5PSI0NjAuMCI+PC9kYzpCb3VuZHM+CiAgICAgICAgPGNtbW5kaTpDTU1OTGFiZWw+PC9jbW1uZGk6Q01NTkxhYmVsPgogICAgICA8L2NtbW5kaTpDTU1OU2hhcGU+CiAgICAgIDxjbW1uZGk6Q01NTlNoYXBlIGlkPSJDTU1OU2hhcGVfcGxhbkl0ZW01IiBjbW1uRWxlbWVudFJlZj0icGxhbkl0ZW01Ij4KICAgICAgICA8ZGM6Qm91bmRzIGhlaWdodD0iNDM2LjAiIHdpZHRoPSIzNDIuMCIgeD0iMTgwLjAiIHk9IjQ1LjAiPjwvZGM6Qm91bmRzPgogICAgICAgIDxjbW1uZGk6Q01NTkxhYmVsPjwvY21tbmRpOkNNTU5MYWJlbD4KICAgICAgPC9jbW1uZGk6Q01NTlNoYXBlPgogICAgICA8Y21tbmRpOkNNTU5TaGFwZSBpZD0iQ01NTlNoYXBlX3BsYW5JdGVtMSIgY21tbkVsZW1lbnRSZWY9InBsYW5JdGVtMSI+CiAgICAgICAgPGRjOkJvdW5kcyBoZWlnaHQ9IjgwLjAiIHdpZHRoPSIxMDAuMCIgeD0iMTk1LjAiIHk9IjMyMi4wIj48L2RjOkJvdW5kcz4KICAgICAgICA8Y21tbmRpOkNNTU5MYWJlbD48L2NtbW5kaTpDTU1OTGFiZWw+CiAgICAgIDwvY21tbmRpOkNNTU5TaGFwZT4KICAgICAgPGNtbW5kaTpDTU1OU2hhcGUgaWQ9IkNNTU5TaGFwZV9wbGFuSXRlbTIiIGNtbW5FbGVtZW50UmVmPSJwbGFuSXRlbTIiPgogICAgICAgIDxkYzpCb3VuZHMgaGVpZ2h0PSI4MC4wIiB3aWR0aD0iMTAwLjAiIHg9IjE5NS4wIiB5PSIyMTAuMCI+PC9kYzpCb3VuZHM+CiAgICAgICAgPGNtbW5kaTpDTU1OTGFiZWw+PC9jbW1uZGk6Q01NTkxhYmVsPgogICAgICA8L2NtbW5kaTpDTU1OU2hhcGU+CiAgICAgIDxjbW1uZGk6Q01NTlNoYXBlIGlkPSJDTU1OU2hhcGVfcGxhbkl0ZW0zIiBjbW1uRWxlbWVudFJlZj0icGxhbkl0ZW0zIj4KICAgICAgICA8ZGM6Qm91bmRzIGhlaWdodD0iODAuMCIgd2lkdGg9IjEwMC4wIiB4PSIxOTQuOTk5OTk3MDk0MjczNjIiIHk9IjEwNC45OTk5OTg0MzUzNzgxIj48L2RjOkJvdW5kcz4KICAgICAgICA8Y21tbmRpOkNNTU5MYWJlbD48L2NtbW5kaTpDTU1OTGFiZWw+CiAgICAgIDwvY21tbmRpOkNNTU5TaGFwZT4KICAgICAgPGNtbW5kaTpDTU1OU2hhcGUgaWQ9IkNNTU5TaGFwZV9wbGFuSXRlbTQiIGNtbW5FbGVtZW50UmVmPSJwbGFuSXRlbTQiPgogICAgICAgIDxkYzpCb3VuZHMgaGVpZ2h0PSI4MC4wIiB3aWR0aD0iMTAwLjAiIHg9IjM5MC4wIiB5PSIyMTAuMCI+PC9kYzpCb3VuZHM+CiAgICAgICAgPGNtbW5kaTpDTU1OTGFiZWw+PC9jbW1uZGk6Q01NTkxhYmVsPgogICAgICA8L2NtbW5kaTpDTU1OU2hhcGU+CiAgICAgIDxjbW1uZGk6Q01NTlNoYXBlIGlkPSJDTU1OU2hhcGVfc2lkLURENUY0REMwLURDQzgtNDQwRS05RkE4LTA0QjVEQUJDNjZEQiIgY21tbkVsZW1lbnRSZWY9InNpZC1ERDVGNERDMC1EQ0M4LTQ0MEUtOUZBOC0wNEI1REFCQzY2REIiPgogICAgICAgIDxkYzpCb3VuZHMgaGVpZ2h0PSIyMi4wIiB3aWR0aD0iMTQuMCIgeD0iMzgyLjAiIHk9IjI0Mi4wIj48L2RjOkJvdW5kcz4KICAgICAgICA8Y21tbmRpOkNNTU5MYWJlbD48L2NtbW5kaTpDTU1OTGFiZWw+CiAgICAgIDwvY21tbmRpOkNNTU5TaGFwZT4KICAgICAgPGNtbW5kaTpDTU1OU2hhcGUgaWQ9IkNNTU5TaGFwZV9wbGFuSXRlbTkiIGNtbW5FbGVtZW50UmVmPSJwbGFuSXRlbTkiPgogICAgICAgIDxkYzpCb3VuZHMgaGVpZ2h0PSIzMjkuMCIgd2lkdGg9IjM4Ny45OTk5OTk5OTk5OTk4IiB4PSI1NTUuMCIgeT0iNzUuMCI+PC9kYzpCb3VuZHM+CiAgICAgICAgPGNtbW5kaTpDTU1OTGFiZWw+PC9jbW1uZGk6Q01NTkxhYmVsPgogICAgICA8L2NtbW5kaTpDTU1OU2hhcGU+CiAgICAgIDxjbW1uZGk6Q01NTlNoYXBlIGlkPSJDTU1OU2hhcGVfc2lkLUEzRjg5MTJFLThFNUEtNEY2QS04OEYwLUFENzk3MkZDRDMyMCIgY21tbkVsZW1lbnRSZWY9InNpZC1BM0Y4OTEyRS04RTVBLTRGNkEtODhGMC1BRDc5NzJGQ0QzMjAiPgogICAgICAgIDxkYzpCb3VuZHMgaGVpZ2h0PSIyMi4wIiB3aWR0aD0iMTQuMCIgeD0iNTQ3LjAiIHk9IjI1MC4wIj48L2RjOkJvdW5kcz4KICAgICAgICA8Y21tbmRpOkNNTU5MYWJlbD48L2NtbW5kaTpDTU1OTGFiZWw+CiAgICAgIDwvY21tbmRpOkNNTU5TaGFwZT4KICAgICAgPGNtbW5kaTpDTU1OU2hhcGUgaWQ9IkNNTU5TaGFwZV9wbGFuSXRlbTYiIGNtbW5FbGVtZW50UmVmPSJwbGFuSXRlbTYiPgogICAgICAgIDxkYzpCb3VuZHMgaGVpZ2h0PSI2MS4wIiB3aWR0aD0iMTU1LjAiIHg9IjY3MS40OTk5OTk5OTk5OTk5IiB5PSIxMTMuNSI+PC9kYzpCb3VuZHM+CiAgICAgICAgPGNtbW5kaTpDTU1OTGFiZWw+PC9jbW1uZGk6Q01NTkxhYmVsPgogICAgICA8L2NtbW5kaTpDTU1OU2hhcGU+CiAgICAgIDxjbW1uZGk6Q01NTlNoYXBlIGlkPSJDTU1OU2hhcGVfcGxhbkl0ZW03IiBjbW1uRWxlbWVudFJlZj0icGxhbkl0ZW03Ij4KICAgICAgICA8ZGM6Qm91bmRzIGhlaWdodD0iNjEuMCIgd2lkdGg9IjE1NS4wIiB4PSI2NzUuMCIgeT0iMjA5LjAiPjwvZGM6Qm91bmRzPgogICAgICAgIDxjbW1uZGk6Q01NTkxhYmVsPjwvY21tbmRpOkNNTU5MYWJlbD4KICAgICAgPC9jbW1uZGk6Q01NTlNoYXBlPgogICAgICA8Y21tbmRpOkNNTU5TaGFwZSBpZD0iQ01NTlNoYXBlX3BsYW5JdGVtOCIgY21tbkVsZW1lbnRSZWY9InBsYW5JdGVtOCI+CiAgICAgICAgPGRjOkJvdW5kcyBoZWlnaHQ9IjYxLjAiIHdpZHRoPSIxNTUuMCIgeD0iNjc1LjAiIHk9IjMwMC4wIj48L2RjOkJvdW5kcz4KICAgICAgICA8Y21tbmRpOkNNTU5MYWJlbD48L2NtbW5kaTpDTU1OTGFiZWw+CiAgICAgIDwvY21tbmRpOkNNTU5TaGFwZT4KICAgICAgPGNtbW5kaTpDTU1OU2hhcGUgaWQ9IkNNTU5TaGFwZV9wbGFuSXRlbTEwIiBjbW1uRWxlbWVudFJlZj0icGxhbkl0ZW0xMCI+CiAgICAgICAgPGRjOkJvdW5kcyBoZWlnaHQ9IjgwLjAiIHdpZHRoPSIxMDAuMCIgeD0iNzM0Ljk5OTk2NzE0Mjk0MDUiIHk9IjQzMC45OTk5OTM1Nzc1OTk2NCI+PC9kYzpCb3VuZHM+CiAgICAgICAgPGNtbW5kaTpDTU1OTGFiZWw+PC9jbW1uZGk6Q01NTkxhYmVsPgogICAgICA8L2NtbW5kaTpDTU1OU2hhcGU+CiAgICAgIDxjbW1uZGk6Q01NTkVkZ2UgaWQ9IkNNTU5FZGdlX3NpZC02MEFFRUU0Ri0wQzA5LTQ4OEEtOUIzMC0yN0FEMjMzQzIzNjAiIGNtbW5FbGVtZW50UmVmPSJzaWQtRERCM0YwQjAtNDUyRi00MDZGLUFENDgtMjJFMUQyMjIyNDcxIiB0YXJnZXRDTU1ORWxlbWVudFJlZj0icGxhbkl0ZW0xMCI+CiAgICAgICAgPGRpOndheXBvaW50IHg9Ijk2Mi4wIiB5PSI0NzAuOTk5OTk5NjY0NTAxNTYiPjwvZGk6d2F5cG9pbnQ+CiAgICAgICAgPGRpOndheXBvaW50IHg9IjgzNC45OTk5NjcxNDI5NDA1IiB5PSI0NzAuOTk5OTkzNTc3NTk5NjQiPjwvZGk6d2F5cG9pbnQ+CiAgICAgICAgPGNtbW5kaTpDTU1OTGFiZWw+PC9jbW1uZGk6Q01NTkxhYmVsPgogICAgICA8L2NtbW5kaTpDTU1ORWRnZT4KICAgIDwvY21tbmRpOkNNTU5EaWFncmFtPgogIDwvY21tbmRpOkNNTU5EST4KPC9kZWZpbml0aW9ucz4=\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/runtime/models",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"runtime",
+								"models"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Case model conversion",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData=JSON.parse(responseBody);\r",
+									"\r",
+									"pm.test(\"Model type is json\", function () {\r",
+									"  pm.expect(pm.response.json().modelType).to.include(\"json\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"modelType\": \"xml\",\r\n    \"modelContent\" : \"PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPGRlZmluaXRpb25zIHhtbG5zPSJodHRwOi8vd3d3Lm9tZy5vcmcvc3BlYy9DTU1OLzIwMTUxMTA5L01PREVMIiB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB4bWxuczpmbG93YWJsZT0iaHR0cDovL2Zsb3dhYmxlLm9yZy9jbW1uIiB4bWxuczpjbW1uZGk9Imh0dHA6Ly93d3cub21nLm9yZy9zcGVjL0NNTU4vMjAxNTExMDkvQ01NTkRJIiB4bWxuczpkYz0iaHR0cDovL3d3dy5vbWcub3JnL3NwZWMvQ01NTi8yMDE1MTEwOS9EQyIgeG1sbnM6ZGk9Imh0dHA6Ly93d3cub21nLm9yZy9zcGVjL0NNTU4vMjAxNTExMDkvREkiIHRhcmdldE5hbWVzcGFjZT0iaHR0cDovL2Zsb3dhYmxlLm9yZy9jbW1uIj4KICA8Y2FzZSBpZD0iTXlDYXNlMTYzNjUxNTY5NjQzMyIgbmFtZT0iTmV3IEhpcmUiIGZsb3dhYmxlOmluaXRpYXRvclZhcmlhYmxlTmFtZT0iaW5pdGlhdG9yIj4KICAgIDxkb2N1bWVudGF0aW9uPnRoaXMgbW9kZWwgaXMgZm9yIHRoZSBuZXcgaGlyZTwvZG9jdW1lbnRhdGlvbj4KICAgIDxjYXNlUGxhbk1vZGVsIGlkPSJOZXdIaXJlIiBuYW1lPSJOZXdIaXJlIiBmbG93YWJsZTpmb3JtRmllbGRWYWxpZGF0aW9uPSJ0cnVlIj4KICAgICAgPHBsYW5JdGVtIGlkPSJwbGFuSXRlbTUiIG5hbWU9IkJlZm9yZSBKb2luaW5nIiBkZWZpbml0aW9uUmVmPSJwdDEiPjwvcGxhbkl0ZW0+CiAgICAgIDxwbGFuSXRlbSBpZD0icGxhbkl0ZW05IiBuYW1lPSJBZnRlciBKb2luaW5nIiBkZWZpbml0aW9uUmVmPSJwdDIiPgogICAgICAgIDxlbnRyeUNyaXRlcmlvbiBpZD0ic2lkLUEzRjg5MTJFLThFNUEtNEY2QS04OEYwLUFENzk3MkZDRDMyMCIgZmxvd2FibGU6c2VudHJ5UmVmPSJzZW50cnkyIj48L2VudHJ5Q3JpdGVyaW9uPgogICAgICA8L3BsYW5JdGVtPgogICAgICA8cGxhbkl0ZW0gaWQ9InBsYW5JdGVtMTAiIG5hbWU9IlJlamVjdCBKb2IiIGRlZmluaXRpb25SZWY9InN0MyI+PC9wbGFuSXRlbT4KICAgICAgPHNlbnRyeSBpZD0ic2VudHJ5MiI+PC9zZW50cnk+CiAgICAgIDxzZW50cnkgaWQ9InNlbnRyeTMiPgogICAgICAgIDxwbGFuSXRlbU9uUGFydCBpZD0ic2VudHJ5T25QYXJ0MSIgc291cmNlUmVmPSJwbGFuSXRlbTEwIj4KICAgICAgICAgIDxzdGFuZGFyZEV2ZW50PmNvbXBsZXRlPC9zdGFuZGFyZEV2ZW50PgogICAgICAgIDwvcGxhbkl0ZW1PblBhcnQ+CiAgICAgIDwvc2VudHJ5PgogICAgICA8c3RhZ2UgaWQ9InB0MSIgbmFtZT0iQmVmb3JlIEpvaW5pbmciPgogICAgICAgIDxwbGFuSXRlbSBpZD0icGxhbkl0ZW0xIiBuYW1lPSJGaXggRGF0ZSBPZiBKb2luaW5nIiBkZWZpbml0aW9uUmVmPSJpZDMiPjwvcGxhbkl0ZW0+CiAgICAgICAgPHBsYW5JdGVtIGlkPSJwbGFuSXRlbTIiIG5hbWU9IkFsbG9jYXRlIE9mZmljZSIgZGVmaW5pdGlvblJlZj0iaWQyIj48L3BsYW5JdGVtPgogICAgICAgIDxwbGFuSXRlbSBpZD0icGxhbkl0ZW0zIiBuYW1lPSJDcmVhdGUgT2ZmaWNlIEVtYWlsIEFkZHJlc3MiIGRlZmluaXRpb25SZWY9ImlkMSI+PC9wbGFuSXRlbT4KICAgICAgICA8cGxhbkl0ZW0gaWQ9InBsYW5JdGVtNCIgbmFtZT0iU2VuZCBKb2luaW5nIExldHRlciBUbyBDYW5kaWRhdGUiIGRlZmluaXRpb25SZWY9ImlkNCI+CiAgICAgICAgICA8ZW50cnlDcml0ZXJpb24gaWQ9InNpZC1ERDVGNERDMC1EQ0M4LTQ0MEUtOUZBOC0wNEI1REFCQzY2REIiIGZsb3dhYmxlOnNlbnRyeVJlZj0ic2VudHJ5MSI+PC9lbnRyeUNyaXRlcmlvbj4KICAgICAgICA8L3BsYW5JdGVtPgogICAgICAgIDxzZW50cnkgaWQ9InNlbnRyeTEiPjwvc2VudHJ5PgogICAgICAgIDxodW1hblRhc2sgaWQ9ImlkMyIgbmFtZT0iRml4IERhdGUgT2YgSm9pbmluZyIgZmxvd2FibGU6YXNzaWduZWU9IiR7aHJ9IiBmbG93YWJsZTpmb3JtRmllbGRWYWxpZGF0aW9uPSJ0cnVlIj4KICAgICAgICAgIDxleHRlbnNpb25FbGVtZW50cz4KICAgICAgICAgICAgPG1vZGVsZXI6aW5pdGlhdG9yLWNhbi1jb21wbGV0ZSB4bWxuczptb2RlbGVyPSJodHRwOi8vZmxvd2FibGUub3JnL21vZGVsZXIiPjwhW0NEQVRBW2ZhbHNlXV0+PC9tb2RlbGVyOmluaXRpYXRvci1jYW4tY29tcGxldGU+CiAgICAgICAgICA8L2V4dGVuc2lvbkVsZW1lbnRzPgogICAgICAgIDwvaHVtYW5UYXNrPgogICAgICAgIDxodW1hblRhc2sgaWQ9ImlkMiIgbmFtZT0iQWxsb2NhdGUgT2ZmaWNlIiBmbG93YWJsZTphc3NpZ25lZT0iJHtocn0iIGZsb3dhYmxlOmZvcm1GaWVsZFZhbGlkYXRpb249InRydWUiPgogICAgICAgICAgPGV4dGVuc2lvbkVsZW1lbnRzPgogICAgICAgICAgICA8bW9kZWxlcjppbml0aWF0b3ItY2FuLWNvbXBsZXRlIHhtbG5zOm1vZGVsZXI9Imh0dHA6Ly9mbG93YWJsZS5vcmcvbW9kZWxlciI+PCFbQ0RBVEFbZmFsc2VdXT48L21vZGVsZXI6aW5pdGlhdG9yLWNhbi1jb21wbGV0ZT4KICAgICAgICAgIDwvZXh0ZW5zaW9uRWxlbWVudHM+CiAgICAgICAgPC9odW1hblRhc2s+CiAgICAgICAgPGh1bWFuVGFzayBpZD0iaWQxIiBuYW1lPSJDcmVhdGUgT2ZmaWNlIEVtYWlsIEFkZHJlc3MiIGZsb3dhYmxlOmFzc2lnbmVlPSIke2hyfSIgZmxvd2FibGU6Zm9ybUZpZWxkVmFsaWRhdGlvbj0idHJ1ZSI+CiAgICAgICAgICA8ZXh0ZW5zaW9uRWxlbWVudHM+CiAgICAgICAgICAgIDxtb2RlbGVyOmluaXRpYXRvci1jYW4tY29tcGxldGUgeG1sbnM6bW9kZWxlcj0iaHR0cDovL2Zsb3dhYmxlLm9yZy9tb2RlbGVyIj48IVtDREFUQVtmYWxzZV1dPjwvbW9kZWxlcjppbml0aWF0b3ItY2FuLWNvbXBsZXRlPgogICAgICAgICAgPC9leHRlbnNpb25FbGVtZW50cz4KICAgICAgICA8L2h1bWFuVGFzaz4KICAgICAgICA8aHVtYW5UYXNrIGlkPSJpZDQiIG5hbWU9IlNlbmQgSm9pbmluZyBMZXR0ZXIgVG8gQ2FuZGlkYXRlIiBmbG93YWJsZTphc3NpZ25lZT0iJHtocn0iIGZsb3dhYmxlOmZvcm1GaWVsZFZhbGlkYXRpb249InRydWUiPgogICAgICAgICAgPGV4dGVuc2lvbkVsZW1lbnRzPgogICAgICAgICAgICA8bW9kZWxlcjppbml0aWF0b3ItY2FuLWNvbXBsZXRlIHhtbG5zOm1vZGVsZXI9Imh0dHA6Ly9mbG93YWJsZS5vcmcvbW9kZWxlciI+PCFbQ0RBVEFbZmFsc2VdXT48L21vZGVsZXI6aW5pdGlhdG9yLWNhbi1jb21wbGV0ZT4KICAgICAgICAgIDwvZXh0ZW5zaW9uRWxlbWVudHM+CiAgICAgICAgPC9odW1hblRhc2s+CiAgICAgIDwvc3RhZ2U+CiAgICAgIDxzdGFnZSBpZD0icHQyIiBuYW1lPSJBZnRlciBKb2luaW5nIj4KICAgICAgICA8cGxhbkl0ZW0gaWQ9InBsYW5JdGVtNiIgbmFtZT0iT24gQm9hcmRpbmcgVHJhaW5pbmciIGRlZmluaXRpb25SZWY9InN0MSI+PC9wbGFuSXRlbT4KICAgICAgICA8cGxhbkl0ZW0gaWQ9InBsYW5JdGVtNyIgbmFtZT0iRmlsbCBJbiBOZWNlc3NhcnkgRm9ybXMgYW5kIFNpZ24gQWdyZWVtZW50cyIgZGVmaW5pdGlvblJlZj0ic3QyIj48L3BsYW5JdGVtPgogICAgICAgIDxwbGFuSXRlbSBpZD0icGxhbkl0ZW04IiBuYW1lPSJBbGxvY2F0ZSBPZmZpY2UgSUQgQ2FyZCIgZGVmaW5pdGlvblJlZj0ic3Q0Ij48L3BsYW5JdGVtPgogICAgICAgIDxodW1hblRhc2sgaWQ9InN0MSIgbmFtZT0iT24gQm9hcmRpbmcgVHJhaW5pbmciIGZsb3dhYmxlOmFzc2lnbmVlPSIke2NhbmRpZGF0ZX0iIGZsb3dhYmxlOmZvcm1GaWVsZFZhbGlkYXRpb249InRydWUiPgogICAgICAgICAgPGV4dGVuc2lvbkVsZW1lbnRzPgogICAgICAgICAgICA8bW9kZWxlcjppbml0aWF0b3ItY2FuLWNvbXBsZXRlIHhtbG5zOm1vZGVsZXI9Imh0dHA6Ly9mbG93YWJsZS5vcmcvbW9kZWxlciI+PCFbQ0RBVEFbZmFsc2VdXT48L21vZGVsZXI6aW5pdGlhdG9yLWNhbi1jb21wbGV0ZT4KICAgICAgICAgIDwvZXh0ZW5zaW9uRWxlbWVudHM+CiAgICAgICAgPC9odW1hblRhc2s+CiAgICAgICAgPGh1bWFuVGFzayBpZD0ic3QyIiBuYW1lPSJGaWxsIEluIE5lY2Vzc2FyeSBGb3JtcyBhbmQgU2lnbiBBZ3JlZW1lbnRzIiBmbG93YWJsZTphc3NpZ25lZT0iJHtjYW5kaWRhdGV9IiBmbG93YWJsZTpmb3JtRmllbGRWYWxpZGF0aW9uPSJ0cnVlIj4KICAgICAgICAgIDxleHRlbnNpb25FbGVtZW50cz4KICAgICAgICAgICAgPG1vZGVsZXI6aW5pdGlhdG9yLWNhbi1jb21wbGV0ZSB4bWxuczptb2RlbGVyPSJodHRwOi8vZmxvd2FibGUub3JnL21vZGVsZXIiPjwhW0NEQVRBW2ZhbHNlXV0+PC9tb2RlbGVyOmluaXRpYXRvci1jYW4tY29tcGxldGU+CiAgICAgICAgICA8L2V4dGVuc2lvbkVsZW1lbnRzPgogICAgICAgIDwvaHVtYW5UYXNrPgogICAgICAgIDxodW1hblRhc2sgaWQ9InN0NCIgbmFtZT0iQWxsb2NhdGUgT2ZmaWNlIElEIENhcmQiIGZsb3dhYmxlOmFzc2lnbmVlPSIke2hyfSIgZmxvd2FibGU6Zm9ybUZpZWxkVmFsaWRhdGlvbj0idHJ1ZSI+CiAgICAgICAgICA8ZXh0ZW5zaW9uRWxlbWVudHM+CiAgICAgICAgICAgIDxtb2RlbGVyOmluaXRpYXRvci1jYW4tY29tcGxldGUgeG1sbnM6bW9kZWxlcj0iaHR0cDovL2Zsb3dhYmxlLm9yZy9tb2RlbGVyIj48IVtDREFUQVtmYWxzZV1dPjwvbW9kZWxlcjppbml0aWF0b3ItY2FuLWNvbXBsZXRlPgogICAgICAgICAgPC9leHRlbnNpb25FbGVtZW50cz4KICAgICAgICA8L2h1bWFuVGFzaz4KICAgICAgPC9zdGFnZT4KICAgICAgPGh1bWFuVGFzayBpZD0ic3QzIiBuYW1lPSJSZWplY3QgSm9iIiBmbG93YWJsZTphc3NpZ25lZT0iJHtjYW5kaWRhdGV9IiBmbG93YWJsZTpmb3JtRmllbGRWYWxpZGF0aW9uPSJ0cnVlIj4KICAgICAgICA8ZXh0ZW5zaW9uRWxlbWVudHM+CiAgICAgICAgICA8bW9kZWxlcjppbml0aWF0b3ItY2FuLWNvbXBsZXRlIHhtbG5zOm1vZGVsZXI9Imh0dHA6Ly9mbG93YWJsZS5vcmcvbW9kZWxlciI+PCFbQ0RBVEFbZmFsc2VdXT48L21vZGVsZXI6aW5pdGlhdG9yLWNhbi1jb21wbGV0ZT4KICAgICAgICA8L2V4dGVuc2lvbkVsZW1lbnRzPgogICAgICA8L2h1bWFuVGFzaz4KICAgICAgPGV4aXRDcml0ZXJpb24gaWQ9InNpZC1EREIzRjBCMC00NTJGLTQwNkYtQUQ0OC0yMkUxRDIyMjI0NzEiIGZsb3dhYmxlOnNlbnRyeVJlZj0ic2VudHJ5MyI+PC9leGl0Q3JpdGVyaW9uPgogICAgPC9jYXNlUGxhbk1vZGVsPgogIDwvY2FzZT4KICA8Y21tbmRpOkNNTU5EST4KICAgIDxjbW1uZGk6Q01NTkRpYWdyYW0gaWQ9IkNNTU5EaWFncmFtX015Q2FzZTE2MzY1MTU2OTY0MzMiPgogICAgICA8Y21tbmRpOkNNTU5TaGFwZSBpZD0iQ01NTlNoYXBlX05ld0hpcmUiIGNtbW5FbGVtZW50UmVmPSJOZXdIaXJlIj4KICAgICAgICA8ZGM6Qm91bmRzIGhlaWdodD0iNTEyLjAiIHdpZHRoPSI4MTguMCIgeD0iMTUwLjAiIHk9IjMwLjAiPjwvZGM6Qm91bmRzPgogICAgICAgIDxjbW1uZGk6Q01NTkxhYmVsPjwvY21tbmRpOkNNTU5MYWJlbD4KICAgICAgPC9jbW1uZGk6Q01NTlNoYXBlPgogICAgICA8Y21tbmRpOkNNTU5TaGFwZSBpZD0iQ01NTlNoYXBlX3NpZC1EREIzRjBCMC00NTJGLTQwNkYtQUQ0OC0yMkUxRDIyMjI0NzEiIGNtbW5FbGVtZW50UmVmPSJzaWQtRERCM0YwQjAtNDUyRi00MDZGLUFENDgtMjJFMUQyMjIyNDcxIj4KICAgICAgICA8ZGM6Qm91bmRzIGhlaWdodD0iMjIuMCIgd2lkdGg9IjE0LjAiIHg9Ijk2Mi4wIiB5PSI0NjAuMCI+PC9kYzpCb3VuZHM+CiAgICAgICAgPGNtbW5kaTpDTU1OTGFiZWw+PC9jbW1uZGk6Q01NTkxhYmVsPgogICAgICA8L2NtbW5kaTpDTU1OU2hhcGU+CiAgICAgIDxjbW1uZGk6Q01NTlNoYXBlIGlkPSJDTU1OU2hhcGVfcGxhbkl0ZW01IiBjbW1uRWxlbWVudFJlZj0icGxhbkl0ZW01Ij4KICAgICAgICA8ZGM6Qm91bmRzIGhlaWdodD0iNDM2LjAiIHdpZHRoPSIzNDIuMCIgeD0iMTgwLjAiIHk9IjQ1LjAiPjwvZGM6Qm91bmRzPgogICAgICAgIDxjbW1uZGk6Q01NTkxhYmVsPjwvY21tbmRpOkNNTU5MYWJlbD4KICAgICAgPC9jbW1uZGk6Q01NTlNoYXBlPgogICAgICA8Y21tbmRpOkNNTU5TaGFwZSBpZD0iQ01NTlNoYXBlX3BsYW5JdGVtMSIgY21tbkVsZW1lbnRSZWY9InBsYW5JdGVtMSI+CiAgICAgICAgPGRjOkJvdW5kcyBoZWlnaHQ9IjgwLjAiIHdpZHRoPSIxMDAuMCIgeD0iMTk1LjAiIHk9IjMyMi4wIj48L2RjOkJvdW5kcz4KICAgICAgICA8Y21tbmRpOkNNTU5MYWJlbD48L2NtbW5kaTpDTU1OTGFiZWw+CiAgICAgIDwvY21tbmRpOkNNTU5TaGFwZT4KICAgICAgPGNtbW5kaTpDTU1OU2hhcGUgaWQ9IkNNTU5TaGFwZV9wbGFuSXRlbTIiIGNtbW5FbGVtZW50UmVmPSJwbGFuSXRlbTIiPgogICAgICAgIDxkYzpCb3VuZHMgaGVpZ2h0PSI4MC4wIiB3aWR0aD0iMTAwLjAiIHg9IjE5NS4wIiB5PSIyMTAuMCI+PC9kYzpCb3VuZHM+CiAgICAgICAgPGNtbW5kaTpDTU1OTGFiZWw+PC9jbW1uZGk6Q01NTkxhYmVsPgogICAgICA8L2NtbW5kaTpDTU1OU2hhcGU+CiAgICAgIDxjbW1uZGk6Q01NTlNoYXBlIGlkPSJDTU1OU2hhcGVfcGxhbkl0ZW0zIiBjbW1uRWxlbWVudFJlZj0icGxhbkl0ZW0zIj4KICAgICAgICA8ZGM6Qm91bmRzIGhlaWdodD0iODAuMCIgd2lkdGg9IjEwMC4wIiB4PSIxOTQuOTk5OTk3MDk0MjczNjIiIHk9IjEwNC45OTk5OTg0MzUzNzgxIj48L2RjOkJvdW5kcz4KICAgICAgICA8Y21tbmRpOkNNTU5MYWJlbD48L2NtbW5kaTpDTU1OTGFiZWw+CiAgICAgIDwvY21tbmRpOkNNTU5TaGFwZT4KICAgICAgPGNtbW5kaTpDTU1OU2hhcGUgaWQ9IkNNTU5TaGFwZV9wbGFuSXRlbTQiIGNtbW5FbGVtZW50UmVmPSJwbGFuSXRlbTQiPgogICAgICAgIDxkYzpCb3VuZHMgaGVpZ2h0PSI4MC4wIiB3aWR0aD0iMTAwLjAiIHg9IjM5MC4wIiB5PSIyMTAuMCI+PC9kYzpCb3VuZHM+CiAgICAgICAgPGNtbW5kaTpDTU1OTGFiZWw+PC9jbW1uZGk6Q01NTkxhYmVsPgogICAgICA8L2NtbW5kaTpDTU1OU2hhcGU+CiAgICAgIDxjbW1uZGk6Q01NTlNoYXBlIGlkPSJDTU1OU2hhcGVfc2lkLURENUY0REMwLURDQzgtNDQwRS05RkE4LTA0QjVEQUJDNjZEQiIgY21tbkVsZW1lbnRSZWY9InNpZC1ERDVGNERDMC1EQ0M4LTQ0MEUtOUZBOC0wNEI1REFCQzY2REIiPgogICAgICAgIDxkYzpCb3VuZHMgaGVpZ2h0PSIyMi4wIiB3aWR0aD0iMTQuMCIgeD0iMzgyLjAiIHk9IjI0Mi4wIj48L2RjOkJvdW5kcz4KICAgICAgICA8Y21tbmRpOkNNTU5MYWJlbD48L2NtbW5kaTpDTU1OTGFiZWw+CiAgICAgIDwvY21tbmRpOkNNTU5TaGFwZT4KICAgICAgPGNtbW5kaTpDTU1OU2hhcGUgaWQ9IkNNTU5TaGFwZV9wbGFuSXRlbTkiIGNtbW5FbGVtZW50UmVmPSJwbGFuSXRlbTkiPgogICAgICAgIDxkYzpCb3VuZHMgaGVpZ2h0PSIzMjkuMCIgd2lkdGg9IjM4Ny45OTk5OTk5OTk5OTk4IiB4PSI1NTUuMCIgeT0iNzUuMCI+PC9kYzpCb3VuZHM+CiAgICAgICAgPGNtbW5kaTpDTU1OTGFiZWw+PC9jbW1uZGk6Q01NTkxhYmVsPgogICAgICA8L2NtbW5kaTpDTU1OU2hhcGU+CiAgICAgIDxjbW1uZGk6Q01NTlNoYXBlIGlkPSJDTU1OU2hhcGVfc2lkLUEzRjg5MTJFLThFNUEtNEY2QS04OEYwLUFENzk3MkZDRDMyMCIgY21tbkVsZW1lbnRSZWY9InNpZC1BM0Y4OTEyRS04RTVBLTRGNkEtODhGMC1BRDc5NzJGQ0QzMjAiPgogICAgICAgIDxkYzpCb3VuZHMgaGVpZ2h0PSIyMi4wIiB3aWR0aD0iMTQuMCIgeD0iNTQ3LjAiIHk9IjI1MC4wIj48L2RjOkJvdW5kcz4KICAgICAgICA8Y21tbmRpOkNNTU5MYWJlbD48L2NtbW5kaTpDTU1OTGFiZWw+CiAgICAgIDwvY21tbmRpOkNNTU5TaGFwZT4KICAgICAgPGNtbW5kaTpDTU1OU2hhcGUgaWQ9IkNNTU5TaGFwZV9wbGFuSXRlbTYiIGNtbW5FbGVtZW50UmVmPSJwbGFuSXRlbTYiPgogICAgICAgIDxkYzpCb3VuZHMgaGVpZ2h0PSI2MS4wIiB3aWR0aD0iMTU1LjAiIHg9IjY3MS40OTk5OTk5OTk5OTk5IiB5PSIxMTMuNSI+PC9kYzpCb3VuZHM+CiAgICAgICAgPGNtbW5kaTpDTU1OTGFiZWw+PC9jbW1uZGk6Q01NTkxhYmVsPgogICAgICA8L2NtbW5kaTpDTU1OU2hhcGU+CiAgICAgIDxjbW1uZGk6Q01NTlNoYXBlIGlkPSJDTU1OU2hhcGVfcGxhbkl0ZW03IiBjbW1uRWxlbWVudFJlZj0icGxhbkl0ZW03Ij4KICAgICAgICA8ZGM6Qm91bmRzIGhlaWdodD0iNjEuMCIgd2lkdGg9IjE1NS4wIiB4PSI2NzUuMCIgeT0iMjA5LjAiPjwvZGM6Qm91bmRzPgogICAgICAgIDxjbW1uZGk6Q01NTkxhYmVsPjwvY21tbmRpOkNNTU5MYWJlbD4KICAgICAgPC9jbW1uZGk6Q01NTlNoYXBlPgogICAgICA8Y21tbmRpOkNNTU5TaGFwZSBpZD0iQ01NTlNoYXBlX3BsYW5JdGVtOCIgY21tbkVsZW1lbnRSZWY9InBsYW5JdGVtOCI+CiAgICAgICAgPGRjOkJvdW5kcyBoZWlnaHQ9IjYxLjAiIHdpZHRoPSIxNTUuMCIgeD0iNjc1LjAiIHk9IjMwMC4wIj48L2RjOkJvdW5kcz4KICAgICAgICA8Y21tbmRpOkNNTU5MYWJlbD48L2NtbW5kaTpDTU1OTGFiZWw+CiAgICAgIDwvY21tbmRpOkNNTU5TaGFwZT4KICAgICAgPGNtbW5kaTpDTU1OU2hhcGUgaWQ9IkNNTU5TaGFwZV9wbGFuSXRlbTEwIiBjbW1uRWxlbWVudFJlZj0icGxhbkl0ZW0xMCI+CiAgICAgICAgPGRjOkJvdW5kcyBoZWlnaHQ9IjgwLjAiIHdpZHRoPSIxMDAuMCIgeD0iNzM0Ljk5OTk2NzE0Mjk0MDUiIHk9IjQzMC45OTk5OTM1Nzc1OTk2NCI+PC9kYzpCb3VuZHM+CiAgICAgICAgPGNtbW5kaTpDTU1OTGFiZWw+PC9jbW1uZGk6Q01NTkxhYmVsPgogICAgICA8L2NtbW5kaTpDTU1OU2hhcGU+CiAgICAgIDxjbW1uZGk6Q01NTkVkZ2UgaWQ9IkNNTU5FZGdlX3NpZC02MEFFRUU0Ri0wQzA5LTQ4OEEtOUIzMC0yN0FEMjMzQzIzNjAiIGNtbW5FbGVtZW50UmVmPSJzaWQtRERCM0YwQjAtNDUyRi00MDZGLUFENDgtMjJFMUQyMjIyNDcxIiB0YXJnZXRDTU1ORWxlbWVudFJlZj0icGxhbkl0ZW0xMCI+CiAgICAgICAgPGRpOndheXBvaW50IHg9Ijk2Mi4wIiB5PSI0NzAuOTk5OTk5NjY0NTAxNTYiPjwvZGk6d2F5cG9pbnQ+CiAgICAgICAgPGRpOndheXBvaW50IHg9IjgzNC45OTk5NjcxNDI5NDA1IiB5PSI0NzAuOTk5OTkzNTc3NTk5NjQiPjwvZGk6d2F5cG9pbnQ+CiAgICAgICAgPGNtbW5kaTpDTU1OTGFiZWw+PC9jbW1uZGk6Q01NTkxhYmVsPgogICAgICA8L2NtbW5kaTpDTU1ORWRnZT4KICAgIDwvY21tbmRpOkNNTU5EaWFncmFtPgogIDwvY21tbmRpOkNNTU5EST4KPC9kZWZpbml0aW9ucz4=\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/models/conversion",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"models",
+								"conversion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get executable case models",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData=JSON.parse(responseBody);\r",
+									"\r",
+									"pm.environment.set(\"caseDefinitionId\", jsonData._embedded.caseModels[1].id);\r",
+									"\r",
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{otdsaccesstoken}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/runtime/models",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"runtime",
+								"models"
+							],
+							"query": [
+								{
+									"key": "latestVersion",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "name",
+									"value": "casemodelwithtasks",
+									"disabled": true
+								},
+								{
+									"key": "version",
+									"value": "8",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a runtime model",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{otdsaccesstoken}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/runtime/models/{{caseDefinitionId}}",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"runtime",
+								"models",
+								"{{caseDefinitionId}}"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "casemodelwithtasks",
+									"disabled": true
+								},
+								{
+									"key": "cascade",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "#2 Start a case",
+			"item": [
+				{
+					"name": "Create a case instance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData=JSON.parse(responseBody);\r",
+									"\r",
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"caseInstanceId\", jsonData.id);\r",
+									"\r",
+									"pm.environment.set(\"tenantId\", jsonData.tenantId);\r",
+									"\r",
+									"pm.environment.set(\"subscriptionId\", jsonData.subscriptionId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"caseDefinitionKey\": \"{{caseKey}}\",\r\n    \"variables\": [\r\n        {\r\n            \"name\": \"candidate\",\r\n            \"value\": {{candidateEmail}}\r\n        },\r\n        {\r\n            \"name\": \"hr\",\r\n            \"value\": {{hrEmail}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/case-instances",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"case-instances"
+							],
+							"query": [
+								{
+									"key": "tenantId",
+									"value": "da1bda1e-b21e-452a-b73f-cd7f9e5a2e60",
+									"disabled": true
+								},
+								{
+									"key": "subscriptionId",
+									"value": "9b4c9575-e116-47df-8b7b-7948a1639803",
+									"disabled": true
+								},
+								{
+									"key": "caseDefinitionName",
+									"value": "CaseOwnerModel",
+									"disabled": true
+								},
+								{
+									"key": "caseInstanceId",
+									"value": "d62b17ea-1cec-11eb-a66d-eeee0affdd95",
+									"disabled": true
+								},
+								{
+									"key": "tenantId",
+									"value": "507eedbc-d89c-4163-8557-0fa884316197",
+									"disabled": true
+								},
+								{
+									"key": "subscriptionId",
+									"value": "e9fa0738-937b-42a9-a33f-e55cf81e94bb",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get case instances",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData=JSON.parse(responseBody);\r",
+									"\r",
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"check if tenantId is same\", function () {\r",
+									"    pm.expect(jsonData._embedded['case-instances'][0].tenantId).to.equal(pm.environment.get('tenantId'));\r",
+									"});\r",
+									"\r",
+									"pm.test(\"check if subscriptionId is same\", function () {\r",
+									"    pm.expect(jsonData._embedded['case-instances'][0].subscriptionId).to.equal(pm.environment.get('subscriptionId'));\r",
+									"});\r",
+									"\r",
+									"pm.test(\"check if case instance id is same\", function () {\r",
+									"    pm.expect(jsonData._embedded['case-instances'][0].id).to.equal(pm.environment.get('caseInstanceId'));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{otdsaccesstoken}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/case-instances?id={{caseInstanceId}}",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"case-instances"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "{{caseInstanceId}}"
+								},
+								{
+									"key": "includeComments",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "caseInstanceId",
+									"value": "{{caseInstanceId}}",
+									"disabled": true
+								},
+								{
+									"key": "includeCaseVariables",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get diagram for a case instance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"\r",
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{otdsaccesstoken}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/case-instances/{{caseInstanceId}}/diagram",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"case-instances",
+								"{{caseInstanceId}}",
+								"diagram"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Stage Overview",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData=JSON.parse(responseBody);\r",
+									"\r",
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{otdsaccesstoken}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/case-instances/{{caseInstanceId}}/stage-overview",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"case-instances",
+								"{{caseInstanceId}}",
+								"stage-overview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get case instance variable",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData=JSON.parse(responseBody);\r",
+									"\r",
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/case-instances/{{caseInstanceId}}/variables",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"case-instances",
+								"{{caseInstanceId}}",
+								"variables"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create case variable",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"name\": \"hiring supervisor\",\r\n        \"value\": {{supervisorEmail}},\r\n        \"audit\" : true\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/case-instances/{{caseInstanceId}}/variables",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"case-instances",
+								"{{caseInstanceId}}",
+								"variables"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "#3 Working with tasks",
+			"item": [
+				{
+					"name": "Get Case tasks",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData=JSON.parse(responseBody);\r",
+									"\r",
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var res = jsonData._embedded['case-tasks'];\r",
+									"\r",
+									"pm.environment.set(\"taskId\", jsonData._embedded['case-tasks'][3].id);\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{otdsaccesstoken}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/tasks?caseInstanceId={{caseInstanceId}}",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "dueDateAfter",
+									"value": "2020-12-19T17:00:58.825Z",
+									"disabled": true
+								},
+								{
+									"key": "count",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "showAuthorizedTasksForCurrentUser",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "includeTaskComments",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "caseInstanceId",
+									"value": "{{caseInstanceId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Specific task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{otdsaccesstoken}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/tasks/{{taskId}}",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"tasks",
+								"{{taskId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create case task variable",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{otdsaccesstoken}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"name\": \"DateTimeVariable\",\r\n        \"type\": \"date\",\r\n        \"value\": \"2016-01-28T23:00:00Z\"\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/tasks/{{taskId}}/variables",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"tasks",
+								"{{taskId}}",
+								"variables"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get case task variables",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{otdsaccesstoken}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/tasks/{{taskId}}/variables",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"tasks",
+								"{{taskId}}",
+								"variables"
+							],
+							"query": [
+								{
+									"key": "count",
+									"value": "20",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update case task variable",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{otdsaccesstoken}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n   {\r\n      \"dueDate\" : \"2020-04-17T04:50:27.862Z\"\r\n   }\r\n                \r\n            ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/tasks/{{taskId}}/variables/DateTimeVariable",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"tasks",
+								"{{taskId}}",
+								"variables",
+								"DateTimeVariable"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Claim a task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{otdsaccesstoken}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action\": \"claim\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/tasks/{{taskId}}",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"tasks",
+								"{{taskId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Act on a task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{otdsaccesstoken}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action\": \"complete\",\r\n    \"variables\": [\r\n        {\r\n            \"audit\": true,\r\n            \"name\": \"Status\",\r\n            \"type\": \"string\",\r\n            \"value\": \"Done\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/tasks/{{taskId}}",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"tasks",
+								"{{taskId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "#4 Case Plan Item Instance",
+			"item": [
+				{
+					"name": "Get Plan Item Instances List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{otdsaccesstoken}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/plan-item-instances?caseInstanceId={{caseInstanceId}}",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"plan-item-instances"
+							],
+							"query": [
+								{
+									"key": "planItemDefinitionType",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "caseInstanceId",
+									"value": "{{caseInstanceId}}"
+								},
+								{
+									"key": "lastEnabledTime",
+									"value": "null1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a specific plan item instance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{otdsaccesstoken}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{host}}/workflow/v1/case/plan-item-instances?caseInstanceId={{caseInstanceId}}",
+							"protocol": "https",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"workflow",
+								"v1",
+								"case",
+								"plan-item-instances"
+							],
+							"query": [
+								{
+									"key": "caseInstanceId",
+									"value": "{{caseInstanceId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "#5 Case history",
+			"item": [
+				{
+					"name": "Get a historic case instance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{historyHost}}/workflow-history/v1/case/historic-case-instances?includeCaseVariables=true&caseInstanceId={{caseInstanceId}}",
+							"protocol": "https",
+							"host": [
+								"{{historyHost}}"
+							],
+							"path": [
+								"workflow-history",
+								"v1",
+								"case",
+								"historic-case-instances"
+							],
+							"query": [
+								{
+									"key": "caseAssignee",
+									"value": "null",
+									"disabled": true
+								},
+								{
+									"key": "caseAssignee",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "fetchOnlyCaseAssigneeTasks",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "taskName",
+									"value": "subTask101",
+									"disabled": true
+								},
+								{
+									"key": "excludeSubTasks",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "includeCaseVariables",
+									"value": "true"
+								},
+								{
+									"key": "caseInstanceId",
+									"value": "{{caseInstanceId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a historic case instance stages with tasks",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{historyHost}}/workflow-history/v1/case/historic-case-instances/{{caseInstanceId}}/stages?includeStageInstancesAndTasks=true&showAuthorizedTasksForCurrentUser=true",
+							"protocol": "https",
+							"host": [
+								"{{historyHost}}"
+							],
+							"path": [
+								"workflow-history",
+								"v1",
+								"case",
+								"historic-case-instances",
+								"{{caseInstanceId}}",
+								"stages"
+							],
+							"query": [
+								{
+									"key": "includeStageInstancesAndTasks",
+									"value": "true"
+								},
+								{
+									"key": "taskId",
+									"value": "f87067dd-c3e4-11ee-99fe-eeee0aff1df3",
+									"disabled": true
+								},
+								{
+									"key": "taskDefinitionKey",
+									"value": "sid-7C9266BB-74DA-4A40-857C-3C3488487F28",
+									"disabled": true
+								},
+								{
+									"key": "taskName",
+									"value": "htask1",
+									"disabled": true
+								},
+								{
+									"key": "taskAssignee",
+									"value": "{{candidateEmail}}",
+									"disabled": true
+								},
+								{
+									"key": "taskCompletedOn",
+									"value": "2024-02-05T05:44:54.667+00:00",
+									"disabled": true
+								},
+								{
+									"key": "taskCompletedAfter",
+									"value": "2024-02-05T05:44:54.667+00:00",
+									"disabled": true
+								},
+								{
+									"key": "taskCompletedBefore",
+									"value": "2024-02-05T05:44:54.667+00:00",
+									"disabled": true
+								},
+								{
+									"key": "taskCreatedOn",
+									"value": "2024-02-05T05:11:08.314+00:00",
+									"disabled": true
+								},
+								{
+									"key": "taskCreatedBefore",
+									"value": "2024-02-06T05:11:10.314+00:00",
+									"disabled": true
+								},
+								{
+									"key": "taskCreatedAfter",
+									"value": "2024-02-04T05:11:08.314+00:00",
+									"disabled": true
+								},
+								{
+									"key": "includeCaseAssigneeTasks",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "fetchOnlyCaseAssigneeTasks",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "taskOwner",
+									"value": "{{candidateEmail}}",
+									"disabled": true
+								},
+								{
+									"key": "taskInvolvedUser",
+									"value": "username",
+									"disabled": true
+								},
+								{
+									"key": "parentTaskId",
+									"value": "f87067dd-c3e4-11ee-99fe-eeee0aff1df3",
+									"disabled": true
+								},
+								{
+									"key": "taskCreatedBefore",
+									"value": "2024-02-05T05:11:08.314+00:00",
+									"disabled": true
+								},
+								{
+									"key": "taskCreatedAfter",
+									"value": "2024-02-04T05:11:08.314+00:00",
+									"disabled": true
+								},
+								{
+									"key": "fetchOnlyCaseAssigneeTasks",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "showAuthorizedTasksForCurrentUser",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "#6 Case Audit logs",
+			"item": [
+				{
+					"name": "case Instance Auditlogs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableCookies": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"url": {
+							"raw": "https://{{historyHost}}/workflow-history/v1/case/case-instances/audit-logs?includeProcessVariables=true&caseInstanceId={{caseInstanceId}}",
+							"protocol": "https",
+							"host": [
+								"{{historyHost}}"
+							],
+							"path": [
+								"workflow-history",
+								"v1",
+								"case",
+								"case-instances",
+								"audit-logs"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "startTime",
+									"disabled": true
+								},
+								{
+									"key": "order",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "count",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "includeProcessVariables",
+									"value": "true"
+								},
+								{
+									"key": "id",
+									"value": "6ca98e3f-2788-11ed-938e-eeee0aff5eda",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "dueDate",
+									"disabled": true
+								},
+								{
+									"key": "sortEmptyValuesOnTop",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "processDefinitionId",
+									"value": "leaveManagementProcess:42:7fde23b8-4854-11ec-8403-eeee0aff0e29",
+									"disabled": true
+								},
+								{
+									"key": "triggerType",
+									"value": "manual",
+									"disabled": true
+								},
+								{
+									"key": "processDefinitionName",
+									"value": "timer1",
+									"disabled": true
+								},
+								{
+									"key": "processDefinitionKey",
+									"value": "{{processDefinitionKey}}",
+									"disabled": true
+								},
+								{
+									"key": "id",
+									"value": "30717bf9-24a9-11ed-b9c2-eeee0aff1364",
+									"disabled": true
+								},
+								{
+									"key": "tenantId",
+									"value": "abc",
+									"disabled": true
+								},
+								{
+									"key": "caseInstanceId",
+									"value": "{{caseInstanceId}}"
+								},
+								{
+									"key": "includeTaskEvents",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "taskInstance Auditlogs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableCookies": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{historyHost}}/workflow-history/v1/case/task-instances/audit-logs",
+							"protocol": "https",
+							"host": [
+								"{{historyHost}}"
+							],
+							"path": [
+								"workflow-history",
+								"v1",
+								"case",
+								"task-instances",
+								"audit-logs"
+							],
+							"query": [
+								{
+									"key": "count",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "includeProcessVariables",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "id",
+									"value": "6ca98e3f-2788-11ed-938e-eeee0aff5eda",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "dueDate",
+									"disabled": true
+								},
+								{
+									"key": "sortEmptyValuesOnTop",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "processDefinitionId",
+									"value": "leaveManagementProcess:42:7fde23b8-4854-11ec-8403-eeee0aff0e29",
+									"disabled": true
+								},
+								{
+									"key": "triggerType",
+									"value": "manual",
+									"disabled": true
+								},
+								{
+									"key": "processDefinitionName",
+									"value": "timer1",
+									"disabled": true
+								},
+								{
+									"key": "id",
+									"value": "30717bf9-24a9-11ed-b9c2-eeee0aff1364",
+									"disabled": true
+								},
+								{
+									"key": "tenantId",
+									"value": "abc",
+									"disabled": true
+								},
+								{
+									"key": "processInstanceId",
+									"value": "{{processInstanceId}}",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Plan Item Auditlogs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is \" + pm.response.code, function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableCookies": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{historyHost}}/workflow-history/v1/case/plan-item-instances/audit-logs",
+							"protocol": "https",
+							"host": [
+								"{{historyHost}}"
+							],
+							"path": [
+								"workflow-history",
+								"v1",
+								"case",
+								"plan-item-instances",
+								"audit-logs"
+							],
+							"query": [
+								{
+									"key": "count",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "includeProcessVariables",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "id",
+									"value": "6ca98e3f-2788-11ed-938e-eeee0aff5eda",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "dueDate",
+									"disabled": true
+								},
+								{
+									"key": "sortEmptyValuesOnTop",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "processDefinitionId",
+									"value": "leaveManagementProcess:42:7fde23b8-4854-11ec-8403-eeee0aff0e29",
+									"disabled": true
+								},
+								{
+									"key": "triggerType",
+									"value": "manual",
+									"disabled": true
+								},
+								{
+									"key": "processDefinitionName",
+									"value": "timer1",
+									"disabled": true
+								},
+								{
+									"key": "id",
+									"value": "30717bf9-24a9-11ed-b9c2-eeee0aff1364",
+									"disabled": true
+								},
+								{
+									"key": "tenantId",
+									"value": "abc",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
